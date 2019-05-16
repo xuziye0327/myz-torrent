@@ -3,9 +3,11 @@ package server
 import (
 	"encoding/base64"
 	"fmt"
+	"myz-torrent/common"
 	"myz-torrent/util"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 )
@@ -31,37 +33,26 @@ func (s *Server) downloadFile(c *gin.Context) {
 		return
 	}
 
-	f, err := os.Open(string(decodePath))
+	path := filepath.Join(s.conf.DownloadDir, string(decodePath))
+	info, err := os.Stat(path)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
 	}
 
-	info, err := f.Stat()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
-		return
-	}
-
-	data := make([]byte, info.Size())
-	l, err := f.Read(data)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
-		return
-	}
-
-	content := make([]byte, 512)
-	if _, err := f.Read(content); err != nil {
-		c.JSON(http.StatusInternalServerError, err)
-		return
+	fileName := info.Name()
+	if info.IsDir() {
+		fileName += ".zip"
 	}
 
 	c.Writer.WriteHeader(http.StatusOK)
-	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%v", f.Name()))
-	c.Header("Content-Type", http.DetectContentType(content))
-	c.Header("Accept-Length", fmt.Sprintf("%v", l))
-	if _, err := c.Writer.Write(data); err != nil {
+	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%v", fileName))
+	c.Header("Content-Type", "application/zip")
+
+	zip := common.NewZipWriter(c.Writer)
+	if err := zip.AddPath(path); err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
 	}
+	zip.Close()
 }
