@@ -1,9 +1,11 @@
 package common
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 )
 
 // File file struct
@@ -12,65 +14,59 @@ type File struct {
 	Name     string `json:"name"`
 	Size     int64  `json:"size"`
 	IsDir    bool   `json:"is_dir"`
-	Child    files  `json:"child"`
 }
 
-type files []*File
+type Files []*File
 
-func (a files) Len() int {
+func (a Files) Len() int {
 	return len(a)
 }
 
-func (a files) Swap(i, j int) {
+func (a Files) Swap(i, j int) {
 	a[i], a[j] = a[j], a[i]
 }
 
-func (a files) Less(i, j int) bool {
+func (a Files) Less(i, j int) bool {
 	if a[i].IsDir == a[j].IsDir {
 		return a[i].Name < a[j].Name
 	}
 	return a[i].IsDir
 }
 
-// ListAllFiles list all files
-func ListAllFiles(file string) (*File, error) {
-	info, err := os.Stat(file)
+func ListFiles(root string) (Files, error) {
+	info, err := os.Stat(root)
 	if err != nil {
 		return nil, err
 	}
 
-	ret := &File{
-		FullPath: file,
-		Size:     info.Size(),
-		Name:     info.Name(),
-		IsDir:    info.IsDir(),
-		Child:    nil,
+	if !info.IsDir() {
+		return nil, fmt.Errorf("Path: {%v} is not a dir ", root)
 	}
 
-	if ret.IsDir {
-		p, err := os.Open(file)
-		if err != nil {
-			return nil, err
-		}
-
-		dir, err := p.Readdir(-1)
-		if err != nil {
-			return nil, err
-		}
-
-		var child []*File
-		for _, f := range dir {
-			c, err := ListAllFiles(filepath.Join(file, f.Name()))
-			if err != nil {
-				return nil, err
-			}
-			ret.Size += c.Size
-			child = append(child, c)
-		}
-
-		sort.Sort(files(child))
-		ret.Child = child
+	p, err := os.Open(root)
+	if err != nil {
+		return nil, err
 	}
 
+	fs, err := p.Readdir(-1)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := Files{}
+	for _, f := range fs {
+		if strings.HasPrefix(f.Name(), ".") {
+			continue
+		}
+
+		ret = append(ret, &File{
+			FullPath: filepath.Join(root, f.Name()),
+			Name:     f.Name(),
+			Size:     f.Size(),
+			IsDir:    f.IsDir(),
+		})
+	}
+
+	sort.Sort(ret)
 	return ret, nil
 }

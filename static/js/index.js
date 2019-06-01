@@ -86,7 +86,7 @@ function deleteNewMagnetLine(id) {
 }
 
 function generateMagnetLine(index, value, isLast, isOnly) {
-    let ret = '<div class="form-inline my-1" id="magnet-form-input-' + index + '">';
+    let ret = '<div class="form-inline mr-sm-2" id="magnet-form-input-' + index + '">';
     ret += '<input type="text" class="form-control col mr-sm-2" id="magnet-' + index + '" placeholder="magnet:?xt=urn:btih:" value="' + value + '">';
     if (isLast) {
         ret += '<button type="button" class="btn btn-primary mr-sm-2" onclick="addNewMagnetLine()">+</button>';
@@ -100,4 +100,87 @@ function generateMagnetLine(index, value, isLast, isOnly) {
 
 window.onload = function () {
     addNewMagnetLine();
+
+    addSubFiles("files", "");
 };
+
+function addSubFiles(divId, path) {
+    path = path.trim();
+    if (path.length !== 0) {
+        path = pathEncode(path);
+    }
+
+    fetch("/file?path=" + path, {
+        method: "GET",
+    }).then(resp => {
+        if (resp.status !== 200) {
+            alert("get files err!");
+            return null;
+        }
+
+        return resp.json()
+    }).then(res => {
+        if (res === null) {
+            return;
+        }
+
+        const curDiv = document.getElementById(divId);
+
+        let index = 0;
+        let html = '<ul class="list-group">';
+        for (let f of res) {
+            let line = '<li class="list-group-item">';
+            line += '<div class="form-inline">';
+            line += '<a href="/file/' + pathEncode(f.full_path) + '" class="col mr-sm-2">' + f.name + '</a>';
+
+            let subId = curDiv.id + '-' + index;
+            if (f.is_dir === true) {
+                line += '<a id="'+ subId + '-option' +'" href="javascript:void(0);" onclick="addSubFiles(\'' + subId + '\', \'' + f.full_path + '\')">+</a>';
+            }
+
+            line += '</div>';
+
+            if (f.is_dir === true) {
+                line += '<div class="list-group" id="' + subId + '"></div>';
+                index += 1;
+            }
+
+            html += line;
+        }
+        html += '</ul>';
+
+        curDiv.innerHTML = html;
+
+        // update current div option
+        const curOption = document.getElementById(divId + "-option");
+        if (curOption === null) {
+            return;
+        }
+
+        let curOnclick = curOption.getAttribute("onclick");
+        curOnclick = curOnclick.replace("addSubFiles", "removeSubFiles");
+
+        curOption.setAttribute("onclick", curOnclick);
+        curOption.innerText = '-';
+    });
+}
+
+function removeSubFiles(divId) {
+    document.getElementById(divId).innerHTML = "";
+
+    const curOption = document.getElementById(divId + "-option");
+
+    let curOnclick = curOption.getAttribute("onclick");
+    curOnclick = curOnclick.replace("removeSubFiles", "addSubFiles");
+
+    curOption.setAttribute("onclick", curOnclick);
+    curOption.innerText = '+';
+}
+
+// firstly convert to urlEncode
+// then using base64 encode
+function pathEncode(path) {
+    path = encodeURI(path);
+    path = window.btoa(path);
+    return path;
+}

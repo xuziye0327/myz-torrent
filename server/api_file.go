@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"myz-torrent/common"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 
@@ -13,20 +14,39 @@ import (
 
 func (s *Server) getAllFiles(c *gin.Context) {
 	root := s.conf.DownloadDir
+	path := c.Query("path")
 
-	file, err := common.ListAllFiles(root)
+	if len(path) != 0 {
+		decodePath, err := pathDecoder(path)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err)
+			return
+		}
+
+		path = string(decodePath)
+	}
+	fs, err := common.ListFiles(filepath.Join(root, path))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, file)
+	for _, f := range fs {
+		rel, err := filepath.Rel(root, f.FullPath)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err)
+			return
+		}
+		f.FullPath = rel
+	}
+
+	c.JSON(http.StatusOK, fs)
 }
 
 func (s *Server) downloadFile(c *gin.Context) {
-	base64Path := c.Param("file")
+	encodePath := c.Param("file")
 
-	decodePath, err := base64.StdEncoding.DecodeString(base64Path)
+	decodePath, err := pathDecoder(encodePath)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
@@ -54,4 +74,19 @@ func (s *Server) downloadFile(c *gin.Context) {
 		return
 	}
 	zip.Close()
+}
+
+// path => base64 => urlEncode => origin
+func pathDecoder(path string) (string, error) {
+	b64Decode, err := base64.StdEncoding.DecodeString(path)
+	if err != nil {
+		return "", err
+	}
+
+	uDecode, err := url.Parse(string(b64Decode))
+	if err != nil {
+		return "", err
+	}
+
+	return uDecode.Path, nil
 }
