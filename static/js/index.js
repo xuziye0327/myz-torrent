@@ -131,7 +131,7 @@ function addSubFiles(divId, path) {
         for (let f of res) {
             let line = '<li class="list-group-item">';
             line += '<div class="form-inline">';
-            line += '<a href="/file/' + pathEncode(f.full_path) + '" class="col mr-sm-2">' + f.name + '</a>';
+            line += '<div class="col mr-sm-2"><a href="/file/' + pathEncode(f.full_path) + '">' + f.name + '</a></div>';
 
             let subId = curDiv.id + '-' + index;
             if (f.is_dir === true) {
