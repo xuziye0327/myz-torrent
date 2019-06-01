@@ -17,6 +17,21 @@ type File struct {
 
 type files []*File
 
+func (a files) Len() int {
+	return len(a)
+}
+
+func (a files) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+
+func (a files) Less(i, j int) bool {
+	if a[i].IsDir == a[j].IsDir {
+		return a[i].Name < a[j].Name
+	}
+	return a[i].IsDir
+}
+
 // ListAllFiles list all files
 func ListAllFiles(file string) (*File, error) {
 	info, err := os.Stat(file)
@@ -58,19 +73,4 @@ func ListAllFiles(file string) (*File, error) {
 	}
 
 	return ret, nil
-}
-
-func (a files) Len() int {
-	return len(a)
-}
-
-func (a files) Swap(i, j int) {
-	a[i], a[j] = a[j], a[i]
-}
-
-func (a files) Less(i, j int) bool {
-	if a[i].IsDir == a[j].IsDir {
-		return a[i].Name < a[j].Name
-	}
-	return a[i].IsDir
 }

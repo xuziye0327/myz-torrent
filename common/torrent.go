@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"sort"
 	"sync"
 	"time"
 
@@ -31,6 +32,20 @@ type Torrent struct {
 
 	t          *torrent.Torrent
 	updateTime time.Time
+}
+
+type Torrents []*Torrent
+
+func (a Torrents) Len() int {
+	return len(a)
+}
+
+func (a Torrents) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+
+func (a Torrents) Less(i, j int) bool {
+	return a[i].Name < a[j].Name
 }
 
 type torrentFile struct {
@@ -97,15 +112,16 @@ func InitTorrentManager(c *Config) (*TorrentManager, error) {
 }
 
 // Torrents all torrents
-func (mg *TorrentManager) Torrents() []*Torrent {
+func (mg *TorrentManager) Torrents() Torrents {
 	mg.mut.RLock()
 	defer mg.mut.RUnlock()
 
-	v := make([]*Torrent, 0, len(mg.torrents))
+	v := Torrents{}
 	for _, t := range mg.torrents {
 		v = append(v, t)
 	}
 
+	sort.Sort(v)
 	return v
 }
 
@@ -212,6 +228,7 @@ func (torrent *Torrent) updateTorrent() {
 		torrent.State.RunningState = loading
 		return
 	}
+	torrent.Name = t.Name()
 
 	fs := t.Files()
 	tfs := torrentFiles{}
