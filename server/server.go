@@ -2,6 +2,7 @@ package server
 
 import (
 	"myz-torrent/common"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,6 +31,13 @@ func (s *Server) Run() error {
 
 func (s *Server) initRouter() {
 	r := gin.Default()
+
+	r.Static("/static/js", "./static/js")
+	r.LoadHTMLGlob("./static/templates/*")
+
+	r.GET("index", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", nil)
+	})
 
 	r.GET("torrent", s.torrents)
 	r.POST("torrent/magnet", s.postMagnet)

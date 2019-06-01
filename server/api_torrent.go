@@ -30,6 +30,6 @@ func (s *Server) postMagnet(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"msg": true,
+		"msg": magnets,
 	})
 }
