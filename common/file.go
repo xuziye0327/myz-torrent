@@ -1,15 +1,16 @@
-package util
+package common
 
 import (
-	"fmt"
 	"os"
+	"path/filepath"
 	"sort"
 )
 
 // File file struct
 type File struct {
-	Name     string `json:"name"`
 	FullPath string `json:"full_path"`
+	Name     string `json:"name"`
+	Size     int64  `json:"size"`
 	IsDir    bool   `json:"is_dir"`
 	Child    files  `json:"child"`
 }
@@ -24,8 +25,9 @@ func ListAllFiles(file string) (*File, error) {
 	}
 
 	ret := &File{
-		Name:     info.Name(),
 		FullPath: file,
+		Size:     info.Size(),
+		Name:     info.Name(),
 		IsDir:    info.IsDir(),
 		Child:    nil,
 	}
@@ -41,12 +43,13 @@ func ListAllFiles(file string) (*File, error) {
 			return nil, err
 		}
 
-		child := []*File{}
+		var child []*File
 		for _, f := range dir {
-			c, err := ListAllFiles(fmt.Sprintf("%v/%v", file, f.Name()))
+			c, err := ListAllFiles(filepath.Join(file, f.Name()))
 			if err != nil {
 				return nil, err
 			}
+			ret.Size += c.Size
 			child = append(child, c)
 		}
 

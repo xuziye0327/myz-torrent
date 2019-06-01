@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"myz-torrent/common"
-	"myz-torrent/util"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -15,7 +14,7 @@ import (
 func (s *Server) getAllFiles(c *gin.Context) {
 	root := s.conf.DownloadDir
 
-	file, err := util.ListAllFiles(root)
+	file, err := common.ListAllFiles(root)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
