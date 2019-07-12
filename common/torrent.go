@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"log"
 	"sort"
 	"sync"
 	"time"
@@ -97,13 +98,6 @@ func InitTorrentManager(c *Config) (*TorrentManager, error) {
 		}
 	}()
 
-	go func() {
-		for {
-			mg.scheduleTorrents()
-			time.Sleep(5 * time.Second)
-		}
-	}()
-
 	return mg, nil
 }
 
@@ -142,7 +136,7 @@ func (mg *TorrentManager) addTorrent(t *torrent.Torrent) {
 
 	go func() {
 		<-t.GotInfo()
-		fmt.Println("GotInfo: ", t.Name())
+		log.Printf("GotInfo: %v.", t.Name())
 	}()
 
 	tt, ok := mg.torrents[t.InfoHash()]
