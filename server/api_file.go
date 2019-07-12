@@ -59,10 +59,7 @@ func (s *Server) downloadFile(c *gin.Context) {
 		return
 	}
 
-	fileName := info.Name()
-	if info.IsDir() {
-		fileName += ".zip"
-	}
+	fileName := info.Name() + ".zip"
 
 	c.Writer.WriteHeader(http.StatusOK)
 	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%v", fileName))
