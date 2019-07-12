@@ -1,8 +1,7 @@
 package common
 
 import (
-	"fmt"
-	"os"
+	"io/ioutil"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -34,21 +33,7 @@ func (a Files) Less(i, j int) bool {
 }
 
 func ListFiles(root string) (Files, error) {
-	info, err := os.Stat(root)
-	if err != nil {
-		return nil, err
-	}
-
-	if !info.IsDir() {
-		return nil, fmt.Errorf("Path: {%v} is not a dir ", root)
-	}
-
-	p, err := os.Open(root)
-	if err != nil {
-		return nil, err
-	}
-
-	fs, err := p.Readdir(-1)
+	fs, err := ioutil.ReadDir(root)
 	if err != nil {
 		return nil, err
 	}
