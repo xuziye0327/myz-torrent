@@ -17,8 +17,6 @@ type TorrentManager struct {
 	torrents map[metainfo.Hash]*Torrent
 
 	dataDir        string
-	running        map[metainfo.Hash]*Torrent
-	queueing       map[metainfo.Hash]*Torrent
 	maxRunningSize int
 }
 
@@ -89,8 +87,6 @@ func InitTorrentManager(c *Config) (*TorrentManager, error) {
 		mut:            sync.RWMutex{},
 		cli:            cli,
 		torrents:       map[metainfo.Hash]*Torrent{},
-		running:        map[metainfo.Hash]*Torrent{},
-		queueing:       map[metainfo.Hash]*Torrent{},
 		maxRunningSize: defaultMaxRunningSize,
 	}
 
@@ -171,15 +167,20 @@ func (mg *TorrentManager) startTorrent(h metainfo.Hash) error {
 		return fmt.Errorf("Not found torrent: %v ", h)
 	}
 
-	if t.State.RunningState == queueing || t.State.RunningState == running || t.State.RunningState == finished {
+	if t.State.RunningState == running {
 		return nil
 	}
 
-	if mg.maxRunningSize < len(mg.running) {
-		mg.running[t.t.InfoHash()] = t
-	} else {
-		mg.queueing[t.t.InfoHash()] = t
-	}
+	go func() {
+		for {
+			if t.t.Info() != nil {
+				t.t.DownloadAll()
+				break
+			}
+
+			time.Sleep(time.Minute)
+		}
+	}()
 
 	return nil
 }
@@ -190,35 +191,6 @@ func (mg *TorrentManager) updateTorrents() {
 
 	for _, t := range mg.torrents {
 		t.updateTorrent()
-	}
-}
-
-func (mg *TorrentManager) scheduleTorrents() {
-	mg.mut.Lock()
-	defer mg.mut.Unlock()
-
-	for _, t := range mg.torrents {
-		if t.State.RunningState == finished {
-			delete(mg.running, t.t.InfoHash())
-			continue
-		}
-
-		if t.State.RunningState != running && t.t.Info() != nil {
-			t.State.RunningState = running
-			t.t.DownloadAll()
-		}
-	}
-
-	for len(mg.running) < mg.maxRunningSize && len(mg.queueing) > 0 {
-		for _, t := range mg.queueing {
-			mg.running[t.t.InfoHash()] = t
-			delete(mg.queueing, t.t.InfoHash())
-			break
-		}
-	}
-
-	for _, t := range mg.queueing {
-		t.State.RunningState = queueing
 	}
 }
 

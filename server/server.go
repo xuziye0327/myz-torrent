@@ -35,7 +35,7 @@ func (s *Server) initRouter() {
 	r.Static("/static/js", "./static/js")
 	r.LoadHTMLGlob("./static/templates/*")
 
-	r.GET("index", func(c *gin.Context) {
+	r.GET("", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", nil)
 	})
 
