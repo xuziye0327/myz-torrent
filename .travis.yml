@@ -1,0 +1,13 @@
+language: go
+
+go:
+  - 1.12.x
+
+env:
+  global:
+    - GO111MODULE=on
+    - GOARCH=amd64
+
+script:
+  - go get -v
+  - go test -v ./...
