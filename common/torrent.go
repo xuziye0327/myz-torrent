@@ -191,7 +191,7 @@ func (mg *TorrentManager) updateTorrents() {
 
 func (torrent *Torrent) updateTorrent() {
 	t := torrent.t
-	if t.Info() == nil {
+	if t.Info() == nil && torrent.State.RunningState != finished {
 		torrent.State.RunningState = loading
 		return
 	}
@@ -232,6 +232,7 @@ func (torrent *Torrent) updateTorrent() {
 	torrent.State.CompleteBytes = completeBytes
 	if totalBytes == completeBytes {
 		torrent.State.RunningState = finished
+		t.Drop()
 	}
 	torrent.updateTime = now
 }

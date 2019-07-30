@@ -2,6 +2,7 @@ package common
 
 import (
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -56,4 +57,9 @@ func ListFiles(root string) (Files, error) {
 
 	sort.Sort(ret)
 	return ret, nil
+}
+
+// DeleteFile delete file under root path
+func DeleteFile(root string) error {
+	return os.RemoveAll(root)
 }

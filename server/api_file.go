@@ -3,29 +3,30 @@ package server
 import (
 	"encoding/base64"
 	"fmt"
+	"log"
 	"myz-torrent/common"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
+type path string
+
 func (s *Server) getAllFiles(c *gin.Context) {
 	root := s.conf.DownloadDir
-	path := c.Query("path")
-
-	if len(path) != 0 {
-		decodePath, err := pathDecoder(path)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, err)
-			return
-		}
-
-		path = string(decodePath)
+	p := path(c.Query("path"))
+	target, err := p.validate(root)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, err)
+		return
 	}
-	fs, err := common.ListFiles(filepath.Join(root, path))
+
+	fs, err := common.ListFiles(target)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
@@ -44,17 +45,18 @@ func (s *Server) getAllFiles(c *gin.Context) {
 }
 
 func (s *Server) downloadFile(c *gin.Context) {
-	encodePath := c.Param("file")
-
-	decodePath, err := pathDecoder(encodePath)
+	root := s.conf.DownloadDir
+	p := path(c.Param("path"))
+	targat, err := p.validate(root)
 	if err != nil {
+		log.Println(err)
 		c.JSON(http.StatusInternalServerError, err)
 		return
 	}
 
-	path := filepath.Join(s.conf.DownloadDir, string(decodePath))
-	info, err := os.Stat(path)
+	info, err := os.Stat(targat)
 	if err != nil {
+		log.Println(err)
 		c.JSON(http.StatusInternalServerError, err)
 		return
 	}
@@ -68,15 +70,59 @@ func (s *Server) downloadFile(c *gin.Context) {
 	zip := common.NewZipWriter(c.Writer)
 	defer zip.Close()
 
-	if err := zip.AddPath(path); err != nil {
+	if err := zip.AddPath(targat); err != nil {
+		log.Println(err)
 		c.JSON(http.StatusInternalServerError, err)
 		return
 	}
 }
 
+func (s *Server) deleteFile(c *gin.Context) {
+	root := s.conf.DownloadDir
+	p := path(c.Param("path"))
+	targat, err := p.validate(root)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := common.DeleteFile(targat); err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, err)
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"ok": true,
+		})
+	}
+}
+
+func (p path) validate(root string) (string, error) {
+	root, err := filepath.Abs(root)
+	if err != nil {
+		return "", fmt.Errorf("get root abd path %v error %v", root, err)
+	}
+
+	target, err := p.decode()
+	if err != nil {
+		return "", fmt.Errorf("path decode error %v", err)
+	}
+
+	res, err := filepath.Abs(filepath.Join(root, target))
+	if err != nil {
+		return "", fmt.Errorf("get abs path error %v", err)
+	}
+
+	if !strings.Contains(res, root) {
+		return "", fmt.Errorf("invaild path %v", res)
+	}
+
+	return res, nil
+}
+
 // path => base64 => urlEncode => origin
-func pathDecoder(path string) (string, error) {
-	b64Decode, err := base64.StdEncoding.DecodeString(path)
+func (p path) decode() (string, error) {
+	b64Decode, err := base64.StdEncoding.DecodeString(string(p))
 	if err != nil {
 		return "", err
 	}

@@ -1,9 +1,8 @@
 package server
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func (s *Server) torrents(c *gin.Context) {

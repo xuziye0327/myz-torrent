@@ -43,7 +43,8 @@ func (s *Server) initRouter() {
 	r.POST("torrent/magnet", s.postMagnet)
 
 	r.GET("file", s.getAllFiles)
-	r.GET("file/:file", s.downloadFile)
+	r.GET("file/:path", s.downloadFile)
+	r.DELETE("file/:path", s.deleteFile)
 
 	s.r = r
 }
