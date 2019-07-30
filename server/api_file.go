@@ -66,11 +66,12 @@ func (s *Server) downloadFile(c *gin.Context) {
 	c.Header("Content-Type", "application/zip")
 
 	zip := common.NewZipWriter(c.Writer)
+	defer zip.Close()
+
 	if err := zip.AddPath(path); err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	zip.Close()
 }
 
 // path => base64 => urlEncode => origin

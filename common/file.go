@@ -15,6 +15,7 @@ type File struct {
 	IsDir    bool   `json:"is_dir"`
 }
 
+// Files struct slice
 type Files []*File
 
 func (a Files) Len() int {
@@ -32,6 +33,7 @@ func (a Files) Less(i, j int) bool {
 	return a[i].IsDir
 }
 
+// ListFiles list all file under root path
 func ListFiles(root string) (Files, error) {
 	fs, err := ioutil.ReadDir(root)
 	if err != nil {

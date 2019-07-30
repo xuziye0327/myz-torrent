@@ -32,8 +32,8 @@ func (z *ZipWriter) AddPath(path string) error {
 }
 
 // Close finish write zip
-func (z *ZipWriter) Close() {
-	z.w.Close()
+func (z *ZipWriter) Close() error {
+	return z.w.Close()
 }
 
 func (z *ZipWriter) zipWalker(path string, info os.FileInfo, err error) error {

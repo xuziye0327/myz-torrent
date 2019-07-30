@@ -23,7 +23,7 @@ type TorrentManager struct {
 
 const defaultMaxRunningSize int = 5
 
-// Torrent is my torrent struct
+// Torrent struct
 type Torrent struct {
 	Name  string       `json:"name"`
 	State state        `json:"state"`
@@ -33,6 +33,7 @@ type Torrent struct {
 	updateTime time.Time
 }
 
+// Torrents struct slice
 type Torrents []*Torrent
 
 func (a Torrents) Len() int {
