@@ -21,8 +21,6 @@ function torrents() {
             return;
         }
 
-        const curDiv = document.getElementById("torrents");
-
         let html = '<ul class="list-group list-group-flush">';
         for (let t of res) {
             let line = '<li class="list-group-item">';
@@ -30,8 +28,8 @@ function torrents() {
 
             line += '<div class="progress">'
             line += '<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"'
-            line += 'aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: ' + t.state.rate + '%">'
-            line += t.state.rate
+            line += 'aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: ' + t.state.percent + '%">'
+            line += t.state.percent
             line += '</div></div>'
 
             line += '</li>'
@@ -39,7 +37,7 @@ function torrents() {
         }
         html += '</ul>';
 
-        curDiv.innerHTML = html;
+        document.getElementById("torrents").innerHTML = html;
     });
 }
 
