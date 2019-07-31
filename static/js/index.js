@@ -1,9 +1,9 @@
 window.onload = function () {
     addNewMagnetLine();
-
-    addSubFiles("files", "");
-
-    torrents()
+    files();
+    torrents();
+    setInterval(files, 5 * 1000);
+    setInterval(torrents, 5 * 1000);
 };
 
 function torrents() {
@@ -29,7 +29,7 @@ function torrents() {
             line += '<div class="progress">'
             line += '<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"'
             line += 'aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: ' + t.state.percent + '%">'
-            line += t.state.percent
+            line += t.state.percent.toFixed(2)
             line += '</div></div>'
 
             line += '</li>'
@@ -139,6 +139,10 @@ function generateMagnetLine(index, value, isLast, isOnly) {
     }
     ret += '</div>';
     return ret;
+}
+
+function files() {
+    addSubFiles("files", "");
 }
 
 function addSubFiles(divId, path) {
