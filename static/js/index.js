@@ -1,3 +1,48 @@
+window.onload = function () {
+    addNewMagnetLine();
+
+    addSubFiles("files", "");
+
+    torrents()
+};
+
+function torrents() {
+    fetch("/torrent", {
+        method: "GET",
+    }).then(resp => {
+        if (resp.status !== 200) {
+            alert("get files err!");
+            return null;
+        }
+
+        return resp.json()
+    }).then(res => {
+        if (res === null) {
+            return;
+        }
+
+        const curDiv = document.getElementById("torrents");
+
+        let html = '<ul class="list-group list-group-flush">';
+        for (let t of res) {
+            let line = '<li class="list-group-item">';
+            line += t.name
+
+            line += '<div class="progress">'
+            line += '<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"'
+            line += 'aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: ' + t.state.rate + '%">'
+            line += t.state.rate
+            line += '</div></div>'
+
+            line += '</li>'
+            html += line;
+        }
+        html += '</ul>';
+
+        curDiv.innerHTML = html;
+    });
+}
+
 function downloadMagnet() {
     const form = document.getElementById("magnet-form");
     const formInputDivs = form.getElementsByTagName("div");
@@ -98,12 +143,6 @@ function generateMagnetLine(index, value, isLast, isOnly) {
     return ret;
 }
 
-window.onload = function () {
-    addNewMagnetLine();
-
-    addSubFiles("files", "");
-};
-
 function addSubFiles(divId, path) {
     path = path.trim();
     if (path.length !== 0) {
@@ -135,7 +174,7 @@ function addSubFiles(divId, path) {
 
             let subId = curDiv.id + '-' + index;
             if (f.is_dir === true) {
-                line += '<a id="'+ subId + '-option' +'" href="javascript:void(0);" onclick="addSubFiles(\'' + subId + '\', \'' + f.full_path + '\')">+</a>';
+                line += '<a id="' + subId + '-option' + '" href="javascript:void(0);" onclick="addSubFiles(\'' + subId + '\', \'' + f.full_path + '\')">+</a>';
             }
 
             line += '</div>';
