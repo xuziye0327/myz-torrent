@@ -15,35 +15,114 @@
 
 <body>
     <div class="container">
-        <div class="container">
-            <div class="shadow-sm p-3 mb-5 bg-white rounded">
-                <div class="container">
-                    <form>
-                        <div class="form-group" id="magnet-form"></div>
-                        <div class="form-group row">
-                            <div class="col-sm-10">
-                                <button type="button" class="btn btn-primary" onclick="return downloadMagnet();">
-                                    Download
-                                </button>
+        <div class="row justify-content-center">
+            <div class="col">
+                <h2><label>Magnet</label></h2>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col">
+                <div class="form-group">
+                    <input type="email" class="form-control" id="magnet" placeholder="Magnet">
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-end">
+            <div class="col-auto">
+                <button type="button" class="btn btn-primary">Download</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col">
+                <h2><label>Torrents</label></h2>
+            </div>
+        </div>
+        <div class="row justify-content-center mb-3">
+            <div class="col">
+                <div class="card card-body">
+                    <div class="row justify-content-between mb-3">
+                        <div class="col-auto">
+                            <div class="card-title">
+                                <p>Avengers.Endgame.2019.1080p.BluRay.x264-SPARKS[rarbg]</p>
                             </div>
                         </div>
-                    </form>
+                        <div class="col-auto">
+                            <div class="btn-group " role="group" aria-label="Basic example">
+                                <button type="button" class="btn btn-success">Start</button>
+                                <button type="button" class="btn btn-secondary">Pause</button>
+                                <button type="button" class="btn btn-danger">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                            aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%"></div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="container">
-            <div class="shadow-sm p-3 mb-5 bg-white rounded">
-                <h5>Torrents</h5>
-                <div class="list-group" id="torrents">
+        <div class="row justify-content-center mb-3">
+            <div class="col">
+                <div class="card card-body">
+                    <div class="row justify-content-between mb-3">
+                        <div class="col-auto">
+                            <div class="card-title">
+                                <p>Avengers.Endgame.2019.1080p.BluRay.x264-SPARKS[rarbg]</p>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="btn-group " role="group" aria-label="Basic example">
+                                <button type="button" class="btn btn-success">Start</button>
+                                <button type="button" class="btn btn-secondary">Pause</button>
+                                <button type="button" class="btn btn-danger">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                            aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%"></div>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="container">
-            <div class="shadow-sm p-3 mb-5 bg-white rounded">
-                <h5>Files</h5>
-                <div class="list-group" id="files"></div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col">
+                <h2><label>Files</label></h2>
+            </div>
+        </div>
+        <div class="row justify-content-center mb-3">
+            <div class="col">
+                <div class="card card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <div class="row justify-content-between">
+                                <div class="col">
+                                    <a href="">Cras justo odio</a>
+                                </div>
+                                <div class="col-auto">
+                                        <a href="">+</a>
+                                </div>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><a href="">Cras justo odio</a></li>
+                                <li class="list-group-item"><a href="">Cras justo odio</a></li>
+                                <li class="list-group-item"><a href="">Cras justo odio</a></li>
+                                <li class="list-group-item"><a href="">Cras justo odio</a></li>
+                                <li class="list-group-item"><a href="">Cras justo odio</a></li>
+                            </ul>
+                        </li>
+                        <li class="list-group-item"><a href="">Cras justo odio</a></li>
+                        <li class="list-group-item"><a href="">Cras justo odio</a></li>
+                        <li class="list-group-item"><a href="">Cras justo odio</a></li>
+                        <li class="list-group-item"><a href="">Cras justo odio</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -59,7 +138,6 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
-    <script src="/static/js/index.js"></script>
 </body>
 
 </html>
