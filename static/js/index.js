@@ -89,6 +89,19 @@ function deleteJob(id) {
     })
 }
 
+function deleteFile(path) {
+    fetch("/file/" + path, {
+        method: "DELETE",
+    }).then(resp => {
+        if (resp.status === 200) {
+            alert("success!")
+            location.reload()
+        } else {
+            resp.text().alert(alert);
+        }
+    })
+}
+
 function updateStates(states) {
     const body = document.querySelector("#downloads")
     while (body.firstChild) {
@@ -114,7 +127,6 @@ function updateStates(states) {
         body.appendChild(clone)
     }
 }
-
 function updateFiles(files) {
     if (files.length === 0) {
         return
@@ -149,6 +161,9 @@ function updateChildFiles(prefix, files) {
         file_link.href = "/file/" + pathEncode(f.full_path)
         file_link.textContent = f.name
 
+        const delete_file = t.querySelector("#delete_file")
+        delete_file.setAttribute("onclick", "deleteFile('" + pathEncode(f.full_path) + "')")
+
         if (f.is_dir === true) {
             const show_file_child = t.querySelector("#show_file_child")
             show_file_child.id = "show_file_child" + curId
@@ -157,7 +172,7 @@ function updateChildFiles(prefix, files) {
 
             const ul = t.querySelector("#file_child")
             ul.id = "file_child" + curId
-            const childs = updateFiles(curId, f.childs)
+            const childs = updateChildFiles(curId, f.childs)
             for (c of childs) {
                 ul.appendChild(c)
             }
@@ -171,7 +186,6 @@ function updateChildFiles(prefix, files) {
 function showFileChild(id) {
     const file_child = document.getElementById("file_child" + id)
     const show_file_child = document.getElementById("show_file_child" + id)
-    console.log(file_child.style.display)
     if (file_child.style.display === "none") {
         file_child.style.display = ""
         show_file_child.textContent = "-"
