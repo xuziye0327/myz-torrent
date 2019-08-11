@@ -41,7 +41,7 @@
             </div>
         </div>
 
-        <div id="downloads" ></div>
+        <div id="downloads"></div>
         <template id="downloads_template">
             <div class="row justify-content-center mb-3">
                 <div class="col">
@@ -77,35 +77,30 @@
                 <h2><label>Files</label></h2>
             </div>
         </div>
-        <div class="row justify-content-center mb-3">
-            <div class="col">
-                <div class="card card-body">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            <div class="row justify-content-between">
-                                <div class="col">
-                                    <a href="">Cras justo odio</a>
-                                </div>
-                                <div class="col-auto">
-                                    <a href="">+</a>
-                                </div>
-                            </div>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item"><a href="">Cras justo odio</a></li>
-                                <li class="list-group-item"><a href="">Cras justo odio</a></li>
-                                <li class="list-group-item"><a href="">Cras justo odio</a></li>
-                                <li class="list-group-item"><a href="">Cras justo odio</a></li>
-                                <li class="list-group-item"><a href="">Cras justo odio</a></li>
-                            </ul>
-                        </li>
-                        <li class="list-group-item"><a href="">Cras justo odio</a></li>
-                        <li class="list-group-item"><a href="">Cras justo odio</a></li>
-                        <li class="list-group-item"><a href="">Cras justo odio</a></li>
-                        <li class="list-group-item"><a href="">Cras justo odio</a></li>
-                    </ul>
+
+        <div id="files"></div>
+        <template id="files_template">
+            <div class="row justify-content-center mb-3">
+                <div class="col">
+                    <div class="card card-body">
+                        <ul class="list-group list-group-flush"></ul>
+                    </div>
                 </div>
             </div>
-        </div>
+        </template>
+        <template id="files_li_template">
+                <li class="list-group-item">
+                        <div class="row justify-content-between">
+                            <div class="col">
+                                <a id="file_link" href=""></a>
+                            </div>
+                            <div class="col-auto">
+                                <a id="show_file_child" href="javascript:void(0);" onclick=""></a>
+                            </div>
+                        </div>
+                        <ul id="file_child" class="list-group list-group-flush" style="display: none"></ul>
+                    </li>
+        </template>
     </div>
 
     <!-- Optional JavaScript -->
