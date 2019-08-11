@@ -2,12 +2,12 @@ package server
 
 import (
 	"net/http"
-	
+
 	"github.com/gin-gonic/gin"
 )
 
 func (s *Server) torrents(c *gin.Context) {
-	c.JSON(http.StatusOK, s.tmg.Torrents())
+	c.JSON(http.StatusOK, s.dmg.State())
 }
 
 func (s *Server) postMagnet(c *gin.Context) {
@@ -21,7 +21,7 @@ func (s *Server) postMagnet(c *gin.Context) {
 	}
 
 	for _, m := range magnets {
-		if err := s.tmg.AddMagnet(m); err != nil {
+		if err := s.dmg.New(m); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"msg": err.Error(),
 			})

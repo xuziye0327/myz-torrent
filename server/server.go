@@ -2,6 +2,7 @@ package server
 
 import (
 	"myz-torrent/common"
+	"myz-torrent/downloader"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,7 +12,7 @@ import (
 type Server struct {
 	r    *gin.Engine
 	conf *common.Config
-	tmg  *common.TorrentManager
+	dmg  *downloader.DownloadManager
 }
 
 // Run server
@@ -22,7 +23,7 @@ func (s *Server) Run() error {
 		return err
 	}
 
-	if err := s.initTorrent(); err != nil {
+	if err := s.initDownloader(); err != nil {
 		return err
 	}
 
@@ -59,12 +60,12 @@ func (s *Server) initConfig() error {
 	return nil
 }
 
-func (s *Server) initTorrent() error {
-	mg, err := common.InitTorrentManager(s.conf)
+func (s *Server) initDownloader() error {
+	dmg, err := downloader.Create(s.conf)
 	if err != nil {
 		return err
 	}
 
-	s.tmg = mg
+	s.dmg = dmg
 	return nil
 }
