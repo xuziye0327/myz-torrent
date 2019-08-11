@@ -77,8 +77,8 @@ func (item *magnetItem) state() state {
 	item.mut.Lock()
 	defer item.mut.Unlock()
 
-	t, _ := item.p.cli.Torrent(item.info)
-	if t.Info() == nil {
+	t, ok := item.p.cli.Torrent(item.info)
+	if !ok || t.Info() == nil {
 		return item.s
 	}
 
