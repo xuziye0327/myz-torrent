@@ -10,7 +10,7 @@ import (
 type magnetItem struct {
 	itemName string
 	info     torrent.InfoHash
-	s        *state
+	s        state
 	cTime    time.Time
 	uTime    time.Time
 
@@ -76,7 +76,7 @@ func (item *magnetItem) state() state {
 
 	t, _ := item.p.cli.Torrent(item.info)
 	if t.Info() == nil {
-		return state{}
+		return item.s
 	}
 
 	item.itemName = t.Name()
@@ -110,6 +110,7 @@ func (item *magnetItem) state() state {
 		t.Drop()
 	}
 
+	item.s = s
 	item.uTime = now
 	return s
 }

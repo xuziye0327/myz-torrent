@@ -44,6 +44,7 @@ func (downloader *magnetDownloader) new(link string) (downloadItem, error) {
 
 		mut:          sync.RWMutex{},
 		p:            downloader,
+		s:            state{},
 		runningState: new,
 	}, nil
 }
