@@ -9,7 +9,7 @@ function fetchStates() {
         method: "GET",
     }).then(resp => {
         if (resp.status !== 200) {
-            alert("get index info err!");
+            alert("get fetch states err!");
             return null;
         }
 
@@ -22,12 +22,71 @@ function fetchFiles() {
         method: "GET",
     }).then(resp => {
         if (resp.status !== 200) {
-            alert("get index info err!");
+            alert("get fetch files err!");
             return null;
         }
 
         return resp.json()
     }).then(updateFiles)
+}
+
+function downloadJob() {
+    const url = document.getElementById("url");
+    const val = url.value.trim();
+    if (val.length === 0) {
+        return;
+    }
+
+    fetch("/download", {
+        method: 'POST',
+        body: JSON.stringify([val]),
+    }).then(resp => {
+        if (resp.status === 200) {
+            alert("success!")
+            location.reload()
+        } else {
+            resp.text().alert(alert);
+        }
+    })
+}
+
+function startJob(id) {
+    fetch("/download/" + id, {
+        method: "POST",
+    }).then(resp => {
+        if (resp.status === 200) {
+            alert("success!")
+            location.reload()
+        } else {
+            resp.text().alert(alert);
+        }
+    })
+}
+
+function pauseJob(id) {
+    fetch("/download/" + id, {
+        method: "PUT",
+    }).then(resp => {
+        if (resp.status === 200) {
+            alert("success!")
+            location.reload()
+        } else {
+            resp.text().alert(alert);
+        }
+    })
+}
+
+function deleteJob(id) {
+    fetch("/download/" + id, {
+        method: "DELETE",
+    }).then(resp => {
+        if (resp.status === 200) {
+            alert("success!")
+            location.reload()
+        } else {
+            resp.text().alert(alert);
+        }
+    })
 }
 
 function updateStates(states) {
@@ -54,25 +113,6 @@ function updateStates(states) {
 
         body.appendChild(clone)
     }
-}
-
-function download() {
-    const url = document.getElementById("url");
-    const val = url.value.trim();
-    if (val.length === 0) {
-        return;
-    }
-
-    fetch("/download", {
-        method: 'POST',
-        body: JSON.stringify([val]),
-    }).then(resp => {
-        if (resp.status === 200) {
-            alert("success!")
-            return
-        }
-        resp.text().then(alert)
-    })
 }
 
 function updateFiles(files) {

@@ -29,7 +29,7 @@
         </div>
         <div class="row justify-content-end">
             <div class="col-auto">
-                <button type="button" class="btn btn-primary" onclick="download()">Download</button>
+                <button type="button" class="btn btn-primary" onclick="downloadJob()">Download</button>
             </div>
         </div>
     </div>
@@ -54,9 +54,12 @@
                             </div>
                             <div class="col-auto">
                                 <div class="btn-group " role="group" aria-label="Basic example">
-                                    <button type="button" class="btn btn-success">Start</button>
-                                    <button type="button" class="btn btn-secondary">Pause</button>
-                                    <button type="button" class="btn btn-danger">Cancel</button>
+                                    <button type="button" class="btn btn-success"
+                                        onclick="startJob(this.value)">Start</button>
+                                    <button type="button" class="btn btn-secondary"
+                                        onclick="pauseJob(this.value)">Pause</button>
+                                    <button type="button" class="btn btn-danger"
+                                        onclick="deleteJob(this.value)">Delete</button>
                                 </div>
                             </div>
                         </div>
@@ -89,17 +92,17 @@
             </div>
         </template>
         <template id="files_li_template">
-                <li class="list-group-item">
-                        <div class="row justify-content-between">
-                            <div class="col">
-                                <a id="file_link" href=""></a>
-                            </div>
-                            <div class="col-auto">
-                                <a id="show_file_child" href="javascript:void(0);" onclick=""></a>
-                            </div>
-                        </div>
-                        <ul id="file_child" class="list-group list-group-flush" style="display: none"></ul>
-                    </li>
+            <li class="list-group-item">
+                <div class="row justify-content-between">
+                    <div class="col">
+                        <a id="file_link" href=""></a>
+                    </div>
+                    <div class="col-auto">
+                        <a id="show_file_child" href="javascript:void(0);" onclick=""></a>
+                    </div>
+                </div>
+                <ul id="file_child" class="list-group list-group-flush" style="display: none"></ul>
+            </li>
         </template>
     </div>
 

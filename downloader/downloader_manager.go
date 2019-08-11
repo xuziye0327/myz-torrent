@@ -88,6 +88,34 @@ func (mg *DownloadManager) Strart(id string) {
 	}
 }
 
+// Pause a download item
+func (mg *DownloadManager) Pause(id string) {
+	mg.mut.Lock()
+	defer mg.mut.Unlock()
+
+	item, ok := mg.downloadItems[id]
+	if !ok {
+		return
+	}
+
+	item.pause()
+}
+
+// Delete a download item
+func (mg *DownloadManager) Delete(id string) {
+	mg.mut.Lock()
+	defer mg.updateState()
+	defer mg.mut.Unlock()
+
+	item, ok := mg.downloadItems[id]
+	if !ok {
+		return
+	}
+
+	item.delete()
+	delete(mg.downloadItems, id)
+}
+
 // State returns all states of download item
 func (mg *DownloadManager) State() DownloadItemStates {
 	return mg.downloadItemStates

@@ -42,6 +42,9 @@ func (s *Server) initRouter() {
 
 	r.GET("download", s.listJob)
 	r.POST("download", s.downloadJob)
+	r.POST("download/:id", s.pauseJob)
+	r.PUT("download/:id", s.pauseJob)
+	r.DELETE("download/:id", s.deleteJob)
 
 	r.GET("file", s.listFile)
 	r.GET("file/:path", s.downloadFile)
