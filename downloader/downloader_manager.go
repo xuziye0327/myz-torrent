@@ -45,7 +45,8 @@ func Create(c *common.Config) (*DownloadManager, error) {
 	go func() {
 		for {
 			mg.updateState()
-			time.Sleep(time.Minute)
+
+			time.Sleep(time.Second)
 		}
 	}()
 
@@ -119,6 +120,9 @@ func (mg *DownloadManager) Delete(id string) {
 
 // State returns all states of download item
 func (mg *DownloadManager) State() DownloadItemStates {
+	mg.mut.RLock()
+	defer mg.mut.RUnlock()
+
 	return mg.downloadItemStates
 }
 
