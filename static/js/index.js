@@ -1,5 +1,5 @@
 window.onload = function () {
-    addNewMagnetLine();
+    // addNewMagnetLine();
     refreash()
     setInterval(refreash, 5 * 1000);
 };
@@ -19,29 +19,37 @@ function refreash() {
             return;
         }
 
-        updateFiles(res.files, "files")
+        // updateFiles(res.files, "files")
         updateStates(res.states)
     })
 }
 
 function updateStates(states) {
-    let html = '<ul class="list-group list-group-flush">';
-    for (let s of states) {
-        let line = '<li class="list-group-item">';
-        line += s.name
-
-        line += '<div class="progress">'
-        line += '<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"'
-        line += 'aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: ' + s.state.percent + '%">'
-        line += s.state.percent.toFixed(2)
-        line += '</div></div>'
-
-        line += '</li>'
-        html += line;
+    const body = document.querySelector("#downloads")
+    while(body.firstChild) {
+        body.removeChild(body.firstChild)
     }
-    html += '</ul>';
 
-    document.getElementById("download_list").innerHTML = html;
+    const template = document.querySelector("#downloads_template")
+    const childs = []
+    for (s of states) {
+        const clone = template.content.cloneNode(true)
+
+        const name = clone.querySelector("p")
+        name.textContent = s.name
+
+        const opts = clone.querySelectorAll("button");
+        for (opt of opts) {
+            opt.value = s.id
+        }
+
+        const progress = clone.querySelector("#download_progress")
+        progress.style.width = s.state.percent + "%"
+        progress.textContent = s.state.percent.toFixed(2) + "%"
+
+        childs.push(clone)
+        body.appendChild(clone)
+    }
 }
 
 function downloadMagnet() {
@@ -227,4 +235,25 @@ function pathEncode(path) {
     path = encodeURI(path);
     path = window.btoa(path);
     return path;
+}
+
+async function download() {
+    const url = document.getElementById("url");
+    const val = url.value.trim();
+    if (val.length === 0) {
+        return;
+    }
+
+    const resp = await fetch("/download", {
+        method: 'POST',
+        body: JSON.stringify([val]),
+    });
+    if (resp.status === 200) {
+        alert("success!");
+        refreshMagnetLine();
+        return true;
+    }
+    const msg = await resp.text();
+    alert(msg);
+    return false;
 }
