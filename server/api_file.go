@@ -16,6 +16,34 @@ import (
 
 type path string
 
+func (s *Server) getAllFiles(c *gin.Context) {
+	root := s.conf.DownloadDir
+	p := path(c.Query("path"))
+	target, err := p.validate(root)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	fs, err := common.ListFiles(target)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	for _, f := range fs {
+		rel, err := filepath.Rel(root, f.FullPath)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err)
+			return
+		}
+		f.FullPath = rel
+	}
+
+	c.JSON(http.StatusOK, fs)
+}
+
 func (s *Server) downloadFile(c *gin.Context) {
 	root := s.conf.DownloadDir
 	p := path(c.Param("path"))

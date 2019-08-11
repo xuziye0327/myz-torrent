@@ -44,6 +44,7 @@ func (s *Server) initRouter() {
 
 	r.POST("download", s.download)
 
+	r.GET("file", s.getAllFiles)
 	r.GET("file/:path", s.downloadFile)
 	r.DELETE("file/:path", s.deleteFile)
 
