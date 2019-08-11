@@ -6,7 +6,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (s *Server) download(c *gin.Context) {
+func (s *Server) listJob(c *gin.Context) {
+	c.JSON(http.StatusOK, s.dmg.State())
+}
+
+func (s *Server) downloadJob(c *gin.Context) {
 	var links []string
 	err := c.BindJSON(&links)
 	if err != nil {

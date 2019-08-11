@@ -1,15 +1,11 @@
 window.onload = function () {
-    // addNewMagnetLine();
-    refreash()
-    addSubFiles("files", "")
-    setInterval(refreash, 5 * 1000);
+    fetchFiles()
+    fetchStates()
+    setInterval(fetchStates, 5 * 1000);
 };
 
-function refreash() {
-}
-
 function fetchStates() {
-    fetch("/index", {
+    fetch("/download", {
         method: "GET",
     }).then(resp => {
         if (resp.status !== 200) {
@@ -18,12 +14,20 @@ function fetchStates() {
         }
 
         return resp.json()
-    }).then(res => {
-        if (res === null) {
-            return;
+    }).then(updateStates)
+}
+
+function fetchFiles() {
+    fetch("/file", {
+        method: "GET",
+    }).then(resp => {
+        if (resp.status !== 200) {
+            alert("get index info err!");
+            return null;
         }
-        updateStates(res.states)
-    })
+
+        return resp.json()
+    }).then(updateFiles)
 }
 
 function updateStates(states) {
@@ -72,9 +76,9 @@ function download() {
 }
 
 function updateFiles(files) {
-    f = '[{"full_path":"Avengers.Endgame.2019.1080p.BluRay.x264-SPARKS[rarbg]","name":"Avengers.Endgame.2019.1080p.BluRay.x264-SPARKS[rarbg]","size":4096,"is_dir":true,"childs": [{        "full_path":"Avengers.Endgame.2019.1080p.BluRay.x264-SPARKS[rarbg]",        "name":"Avengers.Endgame.2019.1080p.BluRay.x264-SPARKS[rarbg]",        "size":4096,        "is_dir":false}]}, {"full_path":"Avengers.Endgame.2019.1080p.BluRay.x264-SPARKS[rarbg]","name":"Avengers.Endgame.2019.1080p.BluRay.x264-SPARKS[rarbg]","size":4096,"is_dir":false}]'
-
-    files = JSON.parse(f)
+    if (files.length === 0) {
+        return
+    }
 
     const body = document.querySelector("#files")
     while (body.firstChild) {
@@ -85,7 +89,7 @@ function updateFiles(files) {
     const clone = template.content.cloneNode(true)
     const ul = clone.querySelector("ul")
 
-    const lis = updateFiles("", files)
+    const lis = updateChildFiles("", files)
     for (li of lis) {
         ul.appendChild(li)
     }
@@ -93,8 +97,7 @@ function updateFiles(files) {
     body.appendChild(clone)
 }
 
-function updateFiles(prefix, files) {
-    console.log(files)
+function updateChildFiles(prefix, files) {
     let id = 0
     const ret = []
     for (f of files) {
@@ -111,7 +114,6 @@ function updateFiles(prefix, files) {
             show_file_child.id = "show_file_child" + curId
             show_file_child.textContent = "+"
             show_file_child.setAttribute("onclick", "showFileChild('" + curId + "')")
-            // show_file_child.onclick = "showFileChild(curId)"
 
             const ul = t.querySelector("#file_child")
             ul.id = "file_child" + curId

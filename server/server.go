@@ -40,11 +40,10 @@ func (s *Server) initRouter() {
 		c.HTML(http.StatusOK, "index.html", nil)
 	})
 
-	r.GET("index", s.index)
+	r.GET("download", s.listJob)
+	r.POST("download", s.downloadJob)
 
-	r.POST("download", s.download)
-
-	r.GET("file", s.getAllFiles)
+	r.GET("file", s.listFile)
 	r.GET("file/:path", s.downloadFile)
 	r.DELETE("file/:path", s.deleteFile)
 
