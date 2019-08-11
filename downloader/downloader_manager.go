@@ -80,6 +80,7 @@ func (mg *DownloadManager) New(link string) error {
 // Strart a download item
 func (mg *DownloadManager) Strart(id string) {
 	mg.mut.Lock()
+	defer mg.updateState()
 	defer mg.mut.Unlock()
 
 	item, ok := mg.downloadItems[id]

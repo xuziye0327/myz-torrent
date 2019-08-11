@@ -57,7 +57,10 @@ func (item *magnetItem) pause() {
 		return
 	}
 
-	item.delete()
+	// this is same with delete(), but mutex is not reentrantable
+	if t, ok := item.p.cli.Torrent(item.info); ok {
+		t.Drop()
+	}
 	item.runningState = pause
 }
 
