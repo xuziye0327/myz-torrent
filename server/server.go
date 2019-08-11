@@ -40,10 +40,10 @@ func (s *Server) initRouter() {
 		c.HTML(http.StatusOK, "index.html", nil)
 	})
 
-	r.GET("torrent", s.torrents)
-	r.POST("torrent/magnet", s.postMagnet)
+	r.GET("index", s.index)
 
-	r.GET("file", s.getAllFiles)
+	r.POST("download", s.download)
+
 	r.GET("file/:path", s.downloadFile)
 	r.DELETE("file/:path", s.deleteFile)
 

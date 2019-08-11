@@ -6,13 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (s *Server) torrents(c *gin.Context) {
-	c.JSON(http.StatusOK, s.dmg.State())
-}
-
-func (s *Server) postMagnet(c *gin.Context) {
-	var magnets []string
-	err := c.BindJSON(&magnets)
+func (s *Server) download(c *gin.Context) {
+	var links []string
+	err := c.BindJSON(&links)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"msg": "magnet is empty",
@@ -20,7 +16,7 @@ func (s *Server) postMagnet(c *gin.Context) {
 		return
 	}
 
-	for _, m := range magnets {
+	for _, m := range links {
 		if err := s.dmg.New(m); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"msg": err.Error(),
@@ -30,6 +26,6 @@ func (s *Server) postMagnet(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"msg": magnets,
+		"msg": links,
 	})
 }

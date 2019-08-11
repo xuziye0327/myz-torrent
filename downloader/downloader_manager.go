@@ -97,7 +97,7 @@ func (mg *DownloadManager) updateState() {
 	mg.mut.Lock()
 	defer mg.mut.Unlock()
 
-	var infos DownloadItemStates
+	infos := make(DownloadItemStates, 0)
 	for _, item := range mg.downloadItems {
 		infos = append(infos, DownloadItemState{
 			ID:    item.id(),

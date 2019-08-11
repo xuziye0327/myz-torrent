@@ -1,17 +1,15 @@
 window.onload = function () {
     addNewMagnetLine();
-    files();
-    torrents();
-    setInterval(files, 5 * 1000);
-    setInterval(torrents, 5 * 1000);
+    refreash()
+    setInterval(refreash, 5 * 1000);
 };
 
-function torrents() {
-    fetch("/torrent", {
+function refreash() {
+    fetch("/index", {
         method: "GET",
     }).then(resp => {
         if (resp.status !== 200) {
-            alert("get files err!");
+            alert("get index info err!");
             return null;
         }
 
@@ -21,49 +19,54 @@ function torrents() {
             return;
         }
 
-        let html = '<ul class="list-group list-group-flush">';
-        for (let t of res) {
-            let line = '<li class="list-group-item">';
-            line += t.name
+        updateFiles(res.files, "files")
+        updateStates(res.states)
+    })
+}
 
-            line += '<div class="progress">'
-            line += '<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"'
-            line += 'aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: ' + t.state.percent + '%">'
-            line += t.state.percent.toFixed(2)
-            line += '</div></div>'
+function updateStates(states) {
+    let html = '<ul class="list-group list-group-flush">';
+    for (let s of states) {
+        let line = '<li class="list-group-item">';
+        line += s.name
 
-            line += '</li>'
-            html += line;
-        }
-        html += '</ul>';
+        line += '<div class="progress">'
+        line += '<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"'
+        line += 'aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: ' + s.state.percent + '%">'
+        line += s.state.percent.toFixed(2)
+        line += '</div></div>'
 
-        document.getElementById("torrents").innerHTML = html;
-    });
+        line += '</li>'
+        html += line;
+    }
+    html += '</ul>';
+
+    document.getElementById("download_list").innerHTML = html;
 }
 
 function downloadMagnet() {
     const form = document.getElementById("magnet-form");
     const formInputDivs = form.getElementsByTagName("div");
 
-    const magnets = [];
+    const links = [];
     for (let i = 0; i < formInputDivs.length; ++i) {
         const div = formInputDivs.item(i);
         const input = div.getElementsByTagName("input").item(0);
 
         const val = input.value.trim();
         if (val.length !== 0) {
-            magnets.push(val);
+            links.push(val);
         }
     }
 
-    if (magnets.length === 0) {
+    if (links.length === 0) {
         console.error("magnets are empty!");
         return false;
     }
 
-    return fetch("/torrent/magnet", {
+    return fetch("/download", {
         method: 'POST',
-        body: JSON.stringify(magnets),
+        body: JSON.stringify(links),
     }).then(resp => {
         if (resp.status === 200) {
             alert("success!");
@@ -141,10 +144,6 @@ function generateMagnetLine(index, value, isLast, isOnly) {
     return ret;
 }
 
-function files() {
-    addSubFiles("files", "");
-}
-
 function addSubFiles(divId, path) {
     path = path.trim();
     if (path.length !== 0) {
@@ -160,50 +159,54 @@ function addSubFiles(divId, path) {
         }
 
         return resp.json()
-    }).then(res => {
-        if (res === null) {
+    }).then(files => {
+        if (files === null) {
             return;
         }
 
-        const curDiv = document.getElementById(divId);
-
-        let index = 0;
-        let html = '<ul class="list-group">';
-        for (let f of res) {
-            let line = '<li class="list-group-item">';
-            line += '<div class="form-inline">';
-            line += '<div class="col mr-sm-2"><a href="/file/' + pathEncode(f.full_path) + '">' + f.name + '</a></div>';
-
-            let subId = curDiv.id + '-' + index;
-            if (f.is_dir === true) {
-                line += '<a id="' + subId + '-option' + '" href="javascript:void(0);" onclick="addSubFiles(\'' + subId + '\', \'' + f.full_path + '\')">+</a>';
-            }
-
-            line += '</div>';
-
-            if (f.is_dir === true) {
-                line += '<div class="list-group" id="' + subId + '"></div>';
-                index += 1;
-            }
-
-            html += line;
-        }
-        html += '</ul>';
-
-        curDiv.innerHTML = html;
-
-        // update current div option
-        const curOption = document.getElementById(divId + "-option");
-        if (curOption === null) {
-            return;
-        }
-
-        let curOnclick = curOption.getAttribute("onclick");
-        curOnclick = curOnclick.replace("addSubFiles", "removeSubFiles");
-
-        curOption.setAttribute("onclick", curOnclick);
-        curOption.innerText = '-';
+        updateFiles(files, divId)
     });
+}
+
+function updateFiles(files, divId) {
+    const curDiv = document.getElementById(divId);
+
+    let index = 0;
+    let html = '<ul class="list-group">';
+    for (let f of files) {
+        let line = '<li class="list-group-item">';
+        line += '<div class="form-inline">';
+        line += '<div class="col mr-sm-2"><a href="/file/' + pathEncode(f.full_path) + '">' + f.name + '</a></div>';
+
+        let subId = curDiv.id + '-' + index;
+        if (f.is_dir === true) {
+            line += '<a id="' + subId + '-option' + '" href="javascript:void(0);" onclick="addSubFiles(\'' + subId + '\', \'' + f.full_path + '\')">+</a>';
+        }
+
+        line += '</div>';
+
+        if (f.is_dir === true) {
+            line += '<div class="list-group" id="' + subId + '"></div>';
+            index += 1;
+        }
+
+        html += line;
+    }
+    html += '</ul>';
+
+    curDiv.innerHTML = html;
+
+    // update current div option
+    const curOption = document.getElementById(divId + "-option");
+    if (curOption === null) {
+        return;
+    }
+
+    let curOnclick = curOption.getAttribute("onclick");
+    curOnclick = curOnclick.replace("addSubFiles", "removeSubFiles");
+
+    curOption.setAttribute("onclick", curOnclick);
+    curOption.innerText = '-';
 }
 
 function removeSubFiles(divId) {
