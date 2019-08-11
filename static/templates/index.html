@@ -15,37 +15,98 @@
 
 <body>
     <div class="container">
-        <div class="container">
-            <div class="shadow-sm p-3 mb-5 bg-white rounded">
-                <div class="container">
-                    <form>
-                        <div class="form-group" id="magnet-form"></div>
-                        <div class="form-group row">
-                            <div class="col-sm-10">
-                                <button type="button" class="btn btn-primary" onclick="return downloadMagnet();">
-                                    Download
-                                </button>
+        <div class="row justify-content-center">
+            <div class="col">
+                <h2><label>Url</label></h2>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col">
+                <div class="form-group">
+                    <input type="email" class="form-control" id="url" placeholder="magnet">
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-end">
+            <div class="col-auto">
+                <button type="button" class="btn btn-primary" onclick="downloadJob()">Download</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col">
+                <h2><label>Downloads</label></h2>
+            </div>
+        </div>
+
+        <div id="downloads"></div>
+        <template id="downloads_template">
+            <div class="row justify-content-center mb-3">
+                <div class="col">
+                    <div class="card card-body">
+                        <div class="row justify-content-between mb-3">
+                            <div class="col-auto">
+                                <div class="card-title">
+                                    <p></p>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="btn-group " role="group" aria-label="Basic example">
+                                    <button type="button" class="btn btn-success"
+                                        onclick="startJob(this.value)">Start</button>
+                                    <button type="button" class="btn btn-secondary"
+                                        onclick="pauseJob(this.value)">Pause</button>
+                                    <button type="button" class="btn btn-danger"
+                                        onclick="deleteJob(this.value)">Delete</button>
+                                </div>
                             </div>
                         </div>
-                    </form>
+                        <div class="progress" style="height: 20px;">
+                            <div id="download_progress" class="progress-bar progress-bar-striped progress-bar-animated"
+                                role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"
+                                style="width: 75%"></div>
+                        </div>
+                    </div>
                 </div>
+            </div>
+        </template>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col">
+                <h2><label>Files</label></h2>
             </div>
         </div>
 
-        <div class="container">
-            <div class="shadow-sm p-3 mb-5 bg-white rounded">
-                <h5>DownloadList</h5>
-                <div class="list-group" id="download_list">
+        <div id="files"></div>
+        <template id="files_template">
+            <div class="row justify-content-center mb-3">
+                <div class="col">
+                    <div class="card card-body">
+                        <ul class="list-group list-group-flush"></ul>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <div class="container">
-            <div class="shadow-sm p-3 mb-5 bg-white rounded">
-                <h5>Files</h5>
-                <div class="list-group" id="files"></div>
-            </div>
-        </div>
+        </template>
+        <template id="files_li_template">
+            <li class="list-group-item">
+                <div class="row justify-content-between">
+                    <div class="col">
+                        <a id="file_link" href=""></a>
+                    </div>
+                    <div class="col-auto">
+                        <a id="show_file_child" href="javascript:void(0);" onclick=""></a>
+                    </div>
+                    <div class="col-auto">
+                        <a id="delete_file" href="javascript:void(0);" onclick="">x</a>
+                    </div>
+                </div>
+                <ul id="file_child" class="list-group list-group-flush" style="display: none"></ul>
+            </li>
+        </template>
     </div>
 
     <!-- Optional JavaScript -->
@@ -59,6 +120,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
+
     <script src="/static/js/index.js"></script>
 </body>
 

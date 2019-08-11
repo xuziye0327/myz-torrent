@@ -16,17 +16,9 @@ import (
 
 type path string
 
-func (s *Server) getAllFiles(c *gin.Context) {
+func (s *Server) listFile(c *gin.Context) {
 	root := s.conf.DownloadDir
-	p := path(c.Query("path"))
-	target, err := p.validate(root)
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, err)
-		return
-	}
-
-	fs, err := common.ListFiles(target)
+	fs, err := common.ListFiles(root)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return

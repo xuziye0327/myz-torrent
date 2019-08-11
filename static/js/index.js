@@ -1,224 +1,198 @@
 window.onload = function () {
-    addNewMagnetLine();
-    refreash()
-    setInterval(refreash, 5 * 1000);
+    fetchFiles()
+    fetchStates()
+    setInterval(fetchStates, 5 * 1000);
 };
 
-function refreash() {
-    fetch("/index", {
+function fetchStates() {
+    fetch("/download", {
         method: "GET",
     }).then(resp => {
         if (resp.status !== 200) {
-            alert("get index info err!");
+            alert("get fetch states err!");
             return null;
         }
 
         return resp.json()
-    }).then(res => {
-        if (res === null) {
-            return;
+    }).then(updateStates)
+}
+
+function fetchFiles() {
+    fetch("/file", {
+        method: "GET",
+    }).then(resp => {
+        if (resp.status !== 200) {
+            alert("get fetch files err!");
+            return null;
         }
 
-        updateFiles(res.files, "files")
-        updateStates(res.states)
+        return resp.json()
+    }).then(updateFiles)
+}
+
+function downloadJob() {
+    const url = document.getElementById("url");
+    const val = url.value.trim();
+    if (val.length === 0) {
+        return;
+    }
+
+    fetch("/download", {
+        method: 'POST',
+        body: JSON.stringify([val]),
+    }).then(resp => {
+        if (resp.status === 200) {
+            alert("success!")
+            location.reload()
+        } else {
+            resp.text().alert(alert);
+        }
+    })
+}
+
+function startJob(id) {
+    fetch("/download/" + id, {
+        method: "POST",
+    }).then(resp => {
+        if (resp.status === 200) {
+            alert("success!")
+            location.reload()
+        } else {
+            resp.text().alert(alert);
+        }
+    })
+}
+
+function pauseJob(id) {
+    fetch("/download/" + id, {
+        method: "PUT",
+    }).then(resp => {
+        if (resp.status === 200) {
+            alert("success!")
+            location.reload()
+        } else {
+            resp.text().alert(alert);
+        }
+    })
+}
+
+function deleteJob(id) {
+    fetch("/download/" + id, {
+        method: "DELETE",
+    }).then(resp => {
+        if (resp.status === 200) {
+            alert("success!")
+            location.reload()
+        } else {
+            resp.text().alert(alert);
+        }
+    })
+}
+
+function deleteFile(path) {
+    fetch("/file/" + path, {
+        method: "DELETE",
+    }).then(resp => {
+        if (resp.status === 200) {
+            alert("success!")
+            location.reload()
+        } else {
+            resp.text().alert(alert);
+        }
     })
 }
 
 function updateStates(states) {
-    let html = '<ul class="list-group list-group-flush">';
-    for (let s of states) {
-        let line = '<li class="list-group-item">';
-        line += s.name
-
-        line += '<div class="progress">'
-        line += '<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"'
-        line += 'aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: ' + s.state.percent + '%">'
-        line += s.state.percent.toFixed(2)
-        line += '</div></div>'
-
-        line += '</li>'
-        html += line;
-    }
-    html += '</ul>';
-
-    document.getElementById("download_list").innerHTML = html;
-}
-
-function downloadMagnet() {
-    const form = document.getElementById("magnet-form");
-    const formInputDivs = form.getElementsByTagName("div");
-
-    const links = [];
-    for (let i = 0; i < formInputDivs.length; ++i) {
-        const div = formInputDivs.item(i);
-        const input = div.getElementsByTagName("input").item(0);
-
-        const val = input.value.trim();
-        if (val.length !== 0) {
-            links.push(val);
-        }
+    const body = document.querySelector("#downloads")
+    while (body.firstChild) {
+        body.removeChild(body.firstChild)
     }
 
-    if (links.length === 0) {
-        console.error("magnets are empty!");
-        return false;
-    }
+    const template = document.querySelector("#downloads_template")
+    for (s of states) {
+        const clone = template.content.cloneNode(true)
 
-    return fetch("/download", {
-        method: 'POST',
-        body: JSON.stringify(links),
-    }).then(resp => {
-        if (resp.status === 200) {
-            alert("success!");
-            refreshMagnetLine();
-            return true;
-        } else {
-            return resp.text()
-                .then(msg => {
-                    alert(msg);
-                    return false;
-                });
-        }
-    });
-}
+        const name = clone.querySelector("p")
+        name.textContent = s.name
 
-function refreshMagnetLine() {
-    const form = document.getElementById("magnet-form");
-    form.innerHTML = "";
-    addNewMagnetLine();
-}
-
-function addNewMagnetLine() {
-    const form = document.getElementById("magnet-form");
-    const formInputDivs = form.getElementsByTagName("div");
-    const newDivs = [];
-
-    for (let i = 0; i < formInputDivs.length; ++i) {
-        const div = formInputDivs.item(i);
-        const input = div.getElementsByTagName("input").item(0);
-
-        newDivs.push(generateMagnetLine(i, input.value, false, false));
-    }
-
-    newDivs.push(generateMagnetLine(formInputDivs.length, "", true, formInputDivs.length === 0));
-
-    form.innerHTML = newDivs.join("");
-}
-
-function deleteNewMagnetLine(id) {
-    const form = document.getElementById("magnet-form");
-    const formInputDivs = form.getElementsByTagName("div");
-
-    const filterDivs = [];
-    for (let i = 0; i < formInputDivs.length; ++i) {
-        const div = formInputDivs.item(i);
-
-        if (div.id === id) {
-            continue;
+        const opts = clone.querySelectorAll("button");
+        for (opt of opts) {
+            opt.value = s.id
         }
 
-        filterDivs.push(div);
+        const progress = clone.querySelector("#download_progress")
+        progress.style.width = s.state.percent + "%"
+        progress.textContent = s.state.percent.toFixed(2) + "%"
+
+        body.appendChild(clone)
+    }
+}
+function updateFiles(files) {
+    if (files.length === 0) {
+        return
     }
 
-    const newDivs = [];
-    for (let i = 0; i < filterDivs.length; ++i) {
-        const div = filterDivs[i];
-        const input = div.getElementsByTagName("input").item(0);
-
-        newDivs.push(generateMagnetLine(i, input.value, i === filterDivs.length - 1, filterDivs.length === 1))
+    const body = document.querySelector("#files")
+    while (body.firstChild) {
+        body.removeChild(body.firstChild)
     }
 
-    form.innerHTML = newDivs.join("");
+    const template = document.querySelector("#files_template")
+    const clone = template.content.cloneNode(true)
+    const ul = clone.querySelector("ul")
+
+    const lis = updateChildFiles("", files)
+    for (li of lis) {
+        ul.appendChild(li)
+    }
+
+    body.appendChild(clone)
 }
 
-function generateMagnetLine(index, value, isLast, isOnly) {
-    let ret = '<div class="form-inline mr-sm-2" id="magnet-form-input-' + index + '">';
-    ret += '<input type="text" class="form-control col mr-sm-2" id="magnet-' + index + '" placeholder="magnet:?xt=urn:btih:" value="' + value + '">';
-    if (isLast) {
-        ret += '<button type="button" class="btn btn-primary mr-sm-2" onclick="addNewMagnetLine()">+</button>';
-    }
-    if (!isOnly) {
-        ret += '<button type="button" class="btn btn-danger mr-sm-2" onclick="deleteNewMagnetLine(\'magnet-form-input-' + index + '\')">-</button>';
-    }
-    ret += '</div>';
-    return ret;
-}
+function updateChildFiles(prefix, files) {
+    let id = 0
+    const ret = []
+    for (f of files) {
+        const curId = prefix + '-' + (id++)
 
-function addSubFiles(divId, path) {
-    path = path.trim();
-    if (path.length !== 0) {
-        path = pathEncode(path);
-    }
+        const tmp = document.querySelector("#files_li_template")
+        const t = tmp.content.cloneNode(true)
+        const file_link = t.querySelector("#file_link")
+        file_link.href = "/file/" + pathEncode(f.full_path)
+        file_link.textContent = f.name
 
-    fetch("/file?path=" + path, {
-        method: "GET",
-    }).then(resp => {
-        if (resp.status !== 200) {
-            alert("get files err!");
-            return null;
-        }
-
-        return resp.json()
-    }).then(files => {
-        if (files === null) {
-            return;
-        }
-
-        updateFiles(files, divId)
-    });
-}
-
-function updateFiles(files, divId) {
-    const curDiv = document.getElementById(divId);
-
-    let index = 0;
-    let html = '<ul class="list-group">';
-    for (let f of files) {
-        let line = '<li class="list-group-item">';
-        line += '<div class="form-inline">';
-        line += '<div class="col mr-sm-2"><a href="/file/' + pathEncode(f.full_path) + '">' + f.name + '</a></div>';
-
-        let subId = curDiv.id + '-' + index;
-        if (f.is_dir === true) {
-            line += '<a id="' + subId + '-option' + '" href="javascript:void(0);" onclick="addSubFiles(\'' + subId + '\', \'' + f.full_path + '\')">+</a>';
-        }
-
-        line += '</div>';
+        const delete_file = t.querySelector("#delete_file")
+        delete_file.setAttribute("onclick", "deleteFile('" + pathEncode(f.full_path) + "')")
 
         if (f.is_dir === true) {
-            line += '<div class="list-group" id="' + subId + '"></div>';
-            index += 1;
+            const show_file_child = t.querySelector("#show_file_child")
+            show_file_child.id = "show_file_child" + curId
+            show_file_child.textContent = "+"
+            show_file_child.setAttribute("onclick", "showFileChild('" + curId + "')")
+
+            const ul = t.querySelector("#file_child")
+            ul.id = "file_child" + curId
+            const childs = updateChildFiles(curId, f.childs)
+            for (c of childs) {
+                ul.appendChild(c)
+            }
         }
 
-        html += line;
+        ret.push(t)
     }
-    html += '</ul>';
-
-    curDiv.innerHTML = html;
-
-    // update current div option
-    const curOption = document.getElementById(divId + "-option");
-    if (curOption === null) {
-        return;
-    }
-
-    let curOnclick = curOption.getAttribute("onclick");
-    curOnclick = curOnclick.replace("addSubFiles", "removeSubFiles");
-
-    curOption.setAttribute("onclick", curOnclick);
-    curOption.innerText = '-';
+    return ret
 }
 
-function removeSubFiles(divId) {
-    document.getElementById(divId).innerHTML = "";
-
-    const curOption = document.getElementById(divId + "-option");
-
-    let curOnclick = curOption.getAttribute("onclick");
-    curOnclick = curOnclick.replace("removeSubFiles", "addSubFiles");
-
-    curOption.setAttribute("onclick", curOnclick);
-    curOption.innerText = '+';
+function showFileChild(id) {
+    const file_child = document.getElementById("file_child" + id)
+    const show_file_child = document.getElementById("show_file_child" + id)
+    if (file_child.style.display === "none") {
+        file_child.style.display = ""
+        show_file_child.textContent = "-"
+    } else {
+        file_child.style.display = "none"
+        show_file_child.textContent = "+"
+    }
 }
 
 // firstly convert to urlEncode

@@ -14,25 +14,11 @@ type File struct {
 	Name     string `json:"name"`
 	Size     int64  `json:"size"`
 	IsDir    bool   `json:"is_dir"`
+	Childs   Files  `json:"childs"`
 }
 
 // Files struct slice
 type Files []*File
-
-func (a Files) Len() int {
-	return len(a)
-}
-
-func (a Files) Swap(i, j int) {
-	a[i], a[j] = a[j], a[i]
-}
-
-func (a Files) Less(i, j int) bool {
-	if a[i].IsDir == a[j].IsDir {
-		return a[i].Name < a[j].Name
-	}
-	return a[i].IsDir
-}
 
 // ListFiles list all file under root path
 func ListFiles(root string) (Files, error) {
@@ -47,11 +33,20 @@ func ListFiles(root string) (Files, error) {
 			continue
 		}
 
+		fullPath := filepath.Join(root, f.Name())
+		var childs Files
+		if f.IsDir() {
+			if childs, err = ListFiles(fullPath); err != nil {
+				return nil, err
+			}
+		}
+
 		ret = append(ret, &File{
-			FullPath: filepath.Join(root, f.Name()),
+			FullPath: fullPath,
 			Name:     f.Name(),
 			Size:     f.Size(),
 			IsDir:    f.IsDir(),
+			Childs:   childs,
 		})
 	}
 
@@ -62,4 +57,19 @@ func ListFiles(root string) (Files, error) {
 // DeleteFile delete file under root path
 func DeleteFile(root string) error {
 	return os.RemoveAll(root)
+}
+
+func (a Files) Len() int {
+	return len(a)
+}
+
+func (a Files) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+
+func (a Files) Less(i, j int) bool {
+	if a[i].IsDir == a[j].IsDir {
+		return a[i].Name < a[j].Name
+	}
+	return a[i].IsDir
 }
