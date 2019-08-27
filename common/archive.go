@@ -24,6 +24,31 @@ func NewZipWriter(w io.Writer) *ZipWriter {
 func (z *ZipWriter) AddPath(path string) error {
 	z.tmpAbsPath = path
 
+	stat, err := os.Stat(path)
+	if err != nil {
+		return err
+	}
+
+	if !stat.IsDir() {
+		name := filepath.Base(path)
+		w, err := z.w.Create(name)
+		if err != nil {
+			return err
+		}
+
+		f, err := os.Open(path)
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+
+		if _, err := io.Copy(w, f); err != nil {
+			return err
+		}
+
+		return nil
+	}
+
 	if err := filepath.Walk(path, z.zipWalker); err != nil {
 		return err
 	}
@@ -39,6 +64,10 @@ func (z *ZipWriter) Close() error {
 func (z *ZipWriter) zipWalker(path string, info os.FileInfo, err error) error {
 	if err != nil {
 		return err
+	}
+
+	if z.tmpAbsPath == path {
+		return nil
 	}
 
 	rel, err := filepath.Rel(z.tmpAbsPath, path)
