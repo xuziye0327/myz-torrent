@@ -2,7 +2,6 @@ package downloader
 
 import (
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/anacrolix/torrent"
@@ -42,7 +41,6 @@ func (downloader *magnetDownloader) new(link string) (downloadItem, error) {
 		cTime:    time.Now(),
 		uTime:    time.Now(),
 
-		mut:          sync.RWMutex{},
 		p:            downloader,
 		s:            state{},
 		runningState: new,

@@ -10,7 +10,7 @@ import (
 
 // DownloadManager is DownloadManager
 type DownloadManager struct {
-	mut sync.RWMutex
+	sync.RWMutex
 
 	downloaders        []downloader
 	downloadItems      map[string]downloadItem
@@ -32,7 +32,6 @@ type DownloadItemStates []DownloadItemState
 // Create a DownloadManager
 func Create(c *common.Config) (*DownloadManager, error) {
 	mg := &DownloadManager{
-		mut:           sync.RWMutex{},
 		downloadItems: map[string]downloadItem{},
 	}
 
@@ -55,9 +54,9 @@ func Create(c *common.Config) (*DownloadManager, error) {
 
 // New download item
 func (mg *DownloadManager) New(link string) error {
-	mg.mut.Lock()
+	mg.Lock()
 	defer mg.updateState()
-	defer mg.mut.Unlock()
+	defer mg.Unlock()
 
 	for _, d := range mg.downloaders {
 		if d.validate(link) {
@@ -80,9 +79,9 @@ func (mg *DownloadManager) New(link string) error {
 
 // Strart a download item
 func (mg *DownloadManager) Strart(id string) {
-	mg.mut.Lock()
+	mg.Lock()
 	defer mg.updateState()
-	defer mg.mut.Unlock()
+	defer mg.Unlock()
 
 	item, ok := mg.downloadItems[id]
 	if ok {
@@ -92,8 +91,8 @@ func (mg *DownloadManager) Strart(id string) {
 
 // Pause a download item
 func (mg *DownloadManager) Pause(id string) {
-	mg.mut.Lock()
-	defer mg.mut.Unlock()
+	mg.Lock()
+	defer mg.Unlock()
 
 	item, ok := mg.downloadItems[id]
 	if !ok {
@@ -105,9 +104,9 @@ func (mg *DownloadManager) Pause(id string) {
 
 // Delete a download item
 func (mg *DownloadManager) Delete(id string) {
-	mg.mut.Lock()
+	mg.Lock()
 	defer mg.updateState()
-	defer mg.mut.Unlock()
+	defer mg.Unlock()
 
 	item, ok := mg.downloadItems[id]
 	if !ok {
@@ -120,15 +119,15 @@ func (mg *DownloadManager) Delete(id string) {
 
 // State returns all states of download item
 func (mg *DownloadManager) State() DownloadItemStates {
-	mg.mut.RLock()
-	defer mg.mut.RUnlock()
+	mg.RLock()
+	defer mg.RUnlock()
 
 	return mg.downloadItemStates
 }
 
 func (mg *DownloadManager) updateState() {
-	mg.mut.Lock()
-	defer mg.mut.Unlock()
+	mg.Lock()
+	defer mg.Unlock()
 
 	infos := make(DownloadItemStates, 0)
 	for _, item := range mg.downloadItems {

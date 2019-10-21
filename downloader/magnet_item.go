@@ -8,13 +8,14 @@ import (
 )
 
 type magnetItem struct {
+	sync.RWMutex
+
 	itemName string
 	info     torrent.InfoHash
 	s        state
 	cTime    time.Time
 	uTime    time.Time
 
-	mut          sync.RWMutex
 	p            *magnetDownloader
 	runningState runningState
 }
@@ -32,8 +33,8 @@ func (item *magnetItem) createTime() time.Time {
 }
 
 func (item *magnetItem) start() {
-	item.mut.Lock()
-	defer item.mut.Unlock()
+	item.Lock()
+	defer item.Unlock()
 
 	if item.runningState == run || item.runningState == finished {
 		return
@@ -50,8 +51,8 @@ func (item *magnetItem) start() {
 }
 
 func (item *magnetItem) pause() {
-	item.mut.Lock()
-	defer item.mut.Unlock()
+	item.Lock()
+	defer item.Unlock()
 
 	if item.runningState == pause || item.runningState == finished {
 		return
@@ -65,8 +66,8 @@ func (item *magnetItem) pause() {
 }
 
 func (item *magnetItem) delete() {
-	item.mut.Lock()
-	defer item.mut.Unlock()
+	item.Lock()
+	defer item.Unlock()
 
 	if t, ok := item.p.cli.Torrent(item.info); ok {
 		t.Drop()
@@ -74,8 +75,8 @@ func (item *magnetItem) delete() {
 }
 
 func (item *magnetItem) state() state {
-	item.mut.Lock()
-	defer item.mut.Unlock()
+	item.Lock()
+	defer item.Unlock()
 
 	t, ok := item.p.cli.Torrent(item.info)
 	if !ok || t.Info() == nil {
