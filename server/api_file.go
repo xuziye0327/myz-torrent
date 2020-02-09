@@ -37,35 +37,42 @@ func (s *Server) listFile(c *gin.Context) {
 }
 
 func (s *Server) downloadFile(c *gin.Context) {
+	log.Printf("downloadFile: Header %v", c.Request.Header)
+
 	root := s.conf.DownloadDir
 	p := path(c.Param("path"))
-	targat, err := p.validate(root)
+	target, err := p.validate(root)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, err)
 		return
 	}
 
-	info, err := os.Stat(targat)
+	info, err := os.Stat(target)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, err)
 		return
 	}
 
-	fileName := info.Name() + ".zip"
+	if info.IsDir() {
+		fileName := info.Name() + ".zip"
 
-	c.Writer.WriteHeader(http.StatusOK)
-	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%v", fileName))
-	c.Header("Content-Type", "application/zip")
+		c.Writer.WriteHeader(http.StatusOK)
+		c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%v", fileName))
+		c.Header("Content-Type", "application/zip")
 
-	zip := common.NewZipWriter(c.Writer)
-	defer zip.Close()
+		zip := common.NewZipWriter(c.Writer)
+		defer zip.Close()
 
-	if err := zip.AddPath(targat); err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, err)
-		return
+		if err := zip.AddPath(target); err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, err)
+			return
+		}
+	} else {
+		c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%v", info.Name()))
+		c.File(target)
 	}
 }
 
