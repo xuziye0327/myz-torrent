@@ -24,23 +24,13 @@ func (s *Server) listFile(c *gin.Context) {
 		return
 	}
 
-	for _, f := range fs {
-		rel, err := filepath.Rel(root, f.FullPath)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, err)
-			return
-		}
-		f.FullPath = rel
-	}
-
 	c.JSON(http.StatusOK, fs)
 }
 
 func (s *Server) downloadFile(c *gin.Context) {
-	log.Printf("downloadFile: Header %v", c.Request.Header)
-
 	root := s.conf.DownloadDir
 	p := path(c.Param("path"))
+
 	target, err := p.validate(root)
 	if err != nil {
 		log.Println(err)
@@ -99,20 +89,20 @@ func (s *Server) deleteFile(c *gin.Context) {
 func (p path) validate(root string) (string, error) {
 	root, err := filepath.Abs(root)
 	if err != nil {
-		return "", fmt.Errorf("get root abd path %v error %v", root, err)
+		return "", fmt.Errorf("get root abs path %v error %v", root, err)
 	}
 
-	target, err := p.decode()
+	decoded, err := p.decode()
 	if err != nil {
 		return "", fmt.Errorf("path decode error %v", err)
 	}
 
-	res, err := filepath.Abs(filepath.Join(root, target))
+	res, err := filepath.Abs(decoded)
 	if err != nil {
-		return "", fmt.Errorf("get abs path error %v", err)
+		return "", fmt.Errorf("get target abs path %v error %v", res, err)
 	}
 
-	if !strings.Contains(res, root) {
+	if !strings.HasPrefix(res, root) {
 		return "", fmt.Errorf("invaild path %v", res)
 	}
 
