@@ -35,7 +35,7 @@ func Create(c *common.Config) (*DownloadManager, error) {
 		downloadItems: map[string]downloadItem{},
 	}
 
-	magnet, err := createMangerDownloader(c.DownloadDir)
+	magnet, err := createMangerDownloader(c.DownloadConfig.DownloadDir)
 	if err != nil {
 		return nil, err
 	}
