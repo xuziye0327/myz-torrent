@@ -1,6 +1,6 @@
 module myz-torrent
 
-go 1.13.7
+go 1.13.8
 
 require (
 	github.com/anacrolix/torrent v1.1.4

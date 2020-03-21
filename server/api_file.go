@@ -17,7 +17,7 @@ import (
 type path string
 
 func (s *Server) listFile(c *gin.Context) {
-	root := s.conf.DownloadDir
+	root := s.conf.DownloadConfig.DownloadDir
 	fs, err := common.ListFiles(root)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
@@ -28,7 +28,7 @@ func (s *Server) listFile(c *gin.Context) {
 }
 
 func (s *Server) downloadFile(c *gin.Context) {
-	root := s.conf.DownloadDir
+	root := s.conf.DownloadConfig.DownloadDir
 	p := path(c.Param("path"))
 
 	target, err := p.validate(root)
@@ -67,7 +67,7 @@ func (s *Server) downloadFile(c *gin.Context) {
 }
 
 func (s *Server) deleteFile(c *gin.Context) {
-	root := s.conf.DownloadDir
+	root := s.conf.DownloadConfig.DownloadDir
 	p := path(c.Param("path"))
 	targat, err := p.validate(root)
 	if err != nil {

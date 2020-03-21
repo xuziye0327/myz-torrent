@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"myz-torrent/common"
 	"myz-torrent/downloader"
 	"net/http"
@@ -27,7 +28,7 @@ func (s *Server) Run() error {
 		return err
 	}
 
-	return s.r.Run()
+	return s.r.Run(fmt.Sprintf("%v:%v", s.conf.ServerAddr, s.conf.ServerPortal))
 }
 
 func (s *Server) initRouter() {
