@@ -4,6 +4,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/anacrolix/log"
 	"github.com/anacrolix/torrent"
 )
 
@@ -16,6 +17,7 @@ func createMangerDownloader(downloadDir string) (downloader, error) {
 	c.DataDir = downloadDir
 	c.NoUpload = true
 	c.TorrentPeersHighWater = 200
+	c.Logger = log.Discard
 
 	cli, err := torrent.NewClient(c)
 	if err != nil {

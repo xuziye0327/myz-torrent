@@ -63,5 +63,5 @@ bin/*
 __debug_bin
 myz-torrent
 debug
-
 vendor/*
+*.log

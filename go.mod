@@ -6,6 +6,7 @@ require (
 	github.com/RoaringBitmap/roaring v0.5.5 // indirect
 	github.com/anacrolix/dht/v2 v2.7.0 // indirect
 	github.com/anacrolix/envpprof v1.1.1 // indirect
+	github.com/anacrolix/log v0.7.1-0.20200604014615-c244de44fd2d
 	github.com/anacrolix/missinggo/v2 v2.5.0 // indirect
 	github.com/anacrolix/torrent v1.18.1
 	github.com/benbjohnson/immutable v0.3.0 // indirect

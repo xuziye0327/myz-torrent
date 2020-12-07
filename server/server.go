@@ -5,6 +5,8 @@ import (
 	"myz-torrent/common"
 	"myz-torrent/downloader"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,8 +20,6 @@ type Server struct {
 
 // Run server
 func (s *Server) Run() error {
-	s.initRouter()
-
 	if err := s.initConfig(); err != nil {
 		return err
 	}
@@ -27,6 +27,8 @@ func (s *Server) Run() error {
 	if err := s.initDownloader(); err != nil {
 		return err
 	}
+
+	s.initRouter()
 
 	return s.r.Run(fmt.Sprintf("%v:%v", s.conf.ServerAddr, s.conf.ServerPortal))
 }
@@ -61,6 +63,26 @@ func (s *Server) initConfig() error {
 	}
 
 	s.conf = c
+
+	// Create log files
+	if len(s.conf.LogPath) > 0 {
+		if err := os.Mkdir(s.conf.LogPath, os.ModeDir); err != nil && !os.IsExist(err) {
+			return err
+		}
+
+		if os.Stdout, err = os.Create(filepath.Join(s.conf.LogPath, "std.log")); err != nil {
+			return fmt.Errorf("error create log file: %v", filepath.Join(s.conf.LogPath, "std.log"))
+		}
+
+		if gin.DefaultWriter, err = os.Create(filepath.Join(s.conf.LogPath, "request.log")); err != nil {
+			return fmt.Errorf("error create log file: %v", filepath.Join(s.conf.LogPath, "requests.log"))
+		}
+
+		if gin.DefaultErrorWriter, err = os.Create(filepath.Join(s.conf.LogPath, "error.log")); err != nil {
+			return fmt.Errorf("error create log file: %v", filepath.Join(s.conf.LogPath, "error.log"))
+		}
+	}
+
 	return nil
 }
 

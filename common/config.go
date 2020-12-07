@@ -6,6 +6,7 @@ import "flag"
 type Config struct {
 	ServerAddr   string `string:"server" json:"server"`
 	ServerPortal int    `int:"portal" json:"portal"`
+	LogPath      string `string:"log_path" json:"log_path"`
 
 	DownloadConfig *DownloadConfig `DownloadConfig:"download_config" json:"download_config"`
 }
@@ -29,11 +30,15 @@ func LoadConfig() (*Config, error) {
 	var c string
 	flag.StringVar(&c, "c", "", "")
 
+	var l string
+	flag.StringVar(&l, "l", "", "")
+
 	flag.Parse()
 
 	return &Config{
 		ServerAddr:   s,
 		ServerPortal: p,
+		LogPath:      l,
 
 		DownloadConfig: &DownloadConfig{
 			DownloadDir: d,
