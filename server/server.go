@@ -66,10 +66,6 @@ func (s *Server) initConfig() error {
 
 	// Create log files
 	if len(s.conf.LogPath) > 0 {
-		if err := os.MkdirAll(s.conf.LogPath, os.ModeDir); err != nil && !os.IsExist(err) {
-			return err
-		}
-
 		if gin.DefaultWriter, err = os.Create(filepath.Join(s.conf.LogPath, "request.log")); err != nil {
 			return fmt.Errorf("error create log file: %v", filepath.Join(s.conf.LogPath, "requests.log"))
 		}
