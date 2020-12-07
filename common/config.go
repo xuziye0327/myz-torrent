@@ -1,6 +1,10 @@
 package common
 
-import "flag"
+import (
+	"encoding/json"
+	"flag"
+	"io/ioutil"
+)
 
 // Config is a global config using in this proj.
 type Config struct {
@@ -35,7 +39,7 @@ func LoadConfig() (*Config, error) {
 
 	flag.Parse()
 
-	return &Config{
+	var conf = &Config{
 		ServerAddr:   s,
 		ServerPortal: p,
 		LogPath:      l,
@@ -43,5 +47,15 @@ func LoadConfig() (*Config, error) {
 		DownloadConfig: &DownloadConfig{
 			DownloadDir: d,
 		},
-	}, nil
+	}
+
+	if len(c) > 0 {
+		if bs, err := ioutil.ReadFile(c); err != nil {
+			return nil, err
+		} else if err := json.Unmarshal(bs, conf); err != nil {
+			return nil, err
+		}
+	}
+
+	return conf, nil
 }
