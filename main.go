@@ -1,14 +1,12 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"myz-torrent/server"
 )
 
 func main() {
 	s := &server.Server{}
 
-	if err := s.Run(); err != nil {
-		fmt.Println(err)
-	}
+	log.Panic(s.Run())
 }
