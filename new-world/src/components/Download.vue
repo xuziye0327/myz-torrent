@@ -2,7 +2,7 @@
   <v-list two-line>
     <v-subheader>Download</v-subheader>
     <template v-for="(item, index) in items">
-      <v-list-item :key="item.name">
+      <v-list-item :key="item.id">
         <v-list-item-action>
           <v-checkbox
             :input-value="active"
@@ -51,5 +51,34 @@
   </v-list>
 </template>
 <script>
-export default {};
+export default {
+  name: "Download",
+
+  data: () => ({
+    items: [
+      {
+        id: "9638456f4262c972bfccf349c2468e862db30867",
+        name: "Lucifer.S02.1080p.AMZN.WEBRip.DDP5.1.x265-SiGMA[rartv]",
+        state: {
+          running_state: 3,
+          total_bytes: 50483072494,
+          complete_bytes: 50483072494,
+          rate: 8358315.600359916,
+          percent: 100,
+        },
+      },
+      {
+        id: "9638456f4262c972bfccf349c2468e862db30137",
+        name: "Lucifer.S02.1080p.AMZN.WEBRip.DDP5.1.x265-SiGMA[rartv]",
+        state: {
+          running_state: 3,
+          total_bytes: 50483072494,
+          complete_bytes: 50483072494,
+          rate: 8358315.600359916,
+          percent: 100,
+        },
+      },
+    ],
+  }),
+};
 </script>
