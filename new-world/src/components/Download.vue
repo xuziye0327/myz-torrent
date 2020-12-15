@@ -1,6 +1,22 @@
 <template>
   <v-list two-line>
-    <v-subheader>Download</v-subheader>
+    <v-row justify="space-between">
+      <v-col>
+        <v-header>Download</v-header>
+      </v-col>
+
+      <v-col lg="1">
+        <v-btn icon>
+          <v-icon>mdi-arrow-down-bold-circle</v-icon>
+        </v-btn>
+        <v-btn icon>
+          <v-icon>mdi-pause</v-icon>
+        </v-btn>
+        <v-btn icon>
+          <v-icon>mdi-delete</v-icon>
+        </v-btn>
+      </v-col>
+    </v-row>
     <template v-for="(item, index) in items">
       <v-list-item :key="item.id">
         <v-list-item-action>
@@ -31,7 +47,19 @@
 
         <v-list-item-action>
           <row>
-            <v-btn icon>
+            <v-menu offset-y>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn v-bind="attrs" v-on="on" icon>
+                  <v-icon>mdi-dots-vertical</v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item> <v-btn text>Start</v-btn> </v-list-item>
+                <v-list-item> <v-btn text>Delete</v-btn> </v-list-item>
+                <v-list-item> <v-btn text>Pause </v-btn></v-list-item>
+              </v-list>
+            </v-menu>
+            <!-- <v-btn icon>
               <v-icon>mdi-arrow-down-bold-circle</v-icon>
             </v-btn>
 
@@ -41,7 +69,7 @@
 
             <v-btn icon>
               <v-icon>mdi-delete</v-icon>
-            </v-btn>
+            </v-btn> -->
           </row>
         </v-list-item-action>
       </v-list-item>
