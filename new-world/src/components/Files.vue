@@ -12,7 +12,7 @@
     indeterminate-icon="mdi-bookmark-minus"
   >
     <template v-slot:prepend="{ item, open }">
-      <v-icon v-if="item.is_dir">
+      <v-icon v-if="item.childs">
         {{ open ? "mdi-folder-open" : "mdi-folder" }}
       </v-icon>
       <v-icon v-else> mdi-file </v-icon>

@@ -13,8 +13,7 @@ type File struct {
 	FullPath string `json:"full_path"`
 	Name     string `json:"name"`
 	Size     int64  `json:"size"`
-	IsDir    bool   `json:"is_dir"`
-	Childs   Files  `json:"childs"`
+	Childs   Files  `json:"childs,omitempty"`
 }
 
 // Files struct slice
@@ -45,7 +44,6 @@ func ListFiles(root string) (Files, error) {
 			FullPath: fullPath,
 			Name:     f.Name(),
 			Size:     f.Size(),
-			IsDir:    f.IsDir(),
 			Childs:   childs,
 		})
 	}
