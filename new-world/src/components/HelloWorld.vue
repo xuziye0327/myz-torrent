@@ -31,12 +31,14 @@
 
 <script>
 import Download from "./Download.vue";
+import Files from "./Files.vue";
 
 export default {
   name: "HelloWorld",
 
   components: {
     Download,
+    Files,
   },
 
   data: () => ({

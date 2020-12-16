@@ -129,7 +129,7 @@ export default {
 
     resolveState(state) {
       return (
-        state.percent +
+        state.percent.toFixed(2) +
         "% " +
         this.convertBytes(state.rate) +
         "/s " +

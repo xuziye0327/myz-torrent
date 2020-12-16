@@ -9,7 +9,12 @@ module.exports = {
         target: process.env.DEV_SERVER,
         secure: false,
         changeOrigin: true,
-      }
+      },
+      '/file': {
+        target: process.env.DEV_SERVER,
+        secure: false,
+        changeOrigin: true,
+      },
     }
   }
 }
