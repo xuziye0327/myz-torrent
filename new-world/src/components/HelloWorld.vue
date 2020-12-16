@@ -22,9 +22,7 @@
           </v-navigation-drawer>
         </v-col>
         <v-col>
-          <div v-if="items[model].title === 'Download'">
-            <Download />
-          </div>
+          <component v-bind:is="items[model].title"></component>
         </v-col>
       </v-row>
     </v-card>
