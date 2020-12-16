@@ -1,64 +1,10 @@
 <template>
   <v-list two-line>
     <v-row justify="space-between">
-      <v-col>
+      <v-col md="4">
         <v-subheader>Download</v-subheader>
       </v-col>
-      <v-col>
-        <v-dialog v-model="downloadDialog" max-width="600px">
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn color="primary" dark v-bind="attrs" v-on="on">
-              Open Dialog
-            </v-btn>
-          </template>
-          <v-card>
-            <v-card-title>
-              <span class="headline">User Profile</span>
-            </v-card-title>
-
-            <v-alert text type="warning" v-model="sheet">
-              Urls cannot be empty!
-            </v-alert>
-
-            <v-card-text>
-              <v-textarea
-                clearable
-                clear-icon="mdi-close-circle-outline"
-                auto-grow
-                placeholder="test"
-                hint="The Woodman set to work at once, and so sharp was his axe that the tree was soon chopped nearly through."
-                v-model="newDownloadItems"
-              />
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer />
-              <v-progress-circular
-                v-if="progressBar"
-                slot="progress"
-                color="blue"
-                indeterminate
-              />
-              <v-btn
-                v-else
-                color="green darken-1"
-                text
-                @click="addToDownloadList()"
-              >
-                Download
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-        <!-- <v-bottom-sheet v-model="sheet">
-          <v-sheet class="text-center" height="200px">
-            <v-btn class="mt-6" text color="red" @click="sheet = !sheet">
-              close
-            </v-btn>
-            <div class="py-3">Download Urls cannot be empty!</div>
-          </v-sheet>
-        </v-bottom-sheet> -->
-      </v-col>
-      <v-col lg="1">
+      <v-col md="2" offset-md="2">
         <v-btn icon v-on:click="startDownloadItem([selected])">
           <v-icon>mdi-arrow-down-bold-circle</v-icon>
         </v-btn>
@@ -68,6 +14,9 @@
         <v-btn icon v-on:click="pauseDownloadItem([item.id])">
           <v-icon>mdi-delete</v-icon>
         </v-btn>
+      </v-col>
+      <v-col>
+        <download-dialog />
       </v-col>
     </v-row>
 
@@ -134,7 +83,9 @@
   </v-list>
 </template>
 <script>
+import DownloadDialog from "./DownloadDialog.vue";
 export default {
+  components: { DownloadDialog },
   name: "Download",
 
   data: () => ({
@@ -174,25 +125,6 @@ export default {
 
     pauseDownloadItem(ids) {
       console.debug(ids);
-    },
-
-    addToDownloadList() {
-      if (this.newDownloadItems.trim()) {
-        const items = this.newDownloadItems
-          .trim()
-          .split("\n")
-          .filter((s) => s);
-        this.$axios
-          .post("download", items)
-          .then(console.log)
-          .catch(console.info)
-          .finally(() => {
-            this.progressBar = false;
-            this.newDownloadItems = "";
-          });
-      } else {
-        this.sheet = true;
-      }
     },
 
     resolveState(state) {
