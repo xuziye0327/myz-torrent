@@ -6,13 +6,13 @@
       </v-col>
 
       <v-col lg="1">
-        <v-btn icon>
+        <v-btn icon v-on:click="startDownloadItem([selected])">
           <v-icon>mdi-arrow-down-bold-circle</v-icon>
         </v-btn>
-        <v-btn icon>
+        <v-btn icon v-on:click="deleteDownloadItem([selected])">
           <v-icon>mdi-pause</v-icon>
         </v-btn>
-        <v-btn icon>
+        <v-btn icon v-on:click="pauseDownloadItem([item.id])">
           <v-icon>mdi-delete</v-icon>
         </v-btn>
       </v-col>
@@ -21,6 +21,8 @@
       <v-list-item :key="item.id">
         <v-list-item-action>
           <v-checkbox
+            v-model="selected"
+            :value="item.id"
             on-icon="mdi-circle"
             off-icon="mdi-circle-outline"
           ></v-checkbox>
@@ -52,9 +54,21 @@
                 </v-btn>
               </template>
               <v-list>
-                <v-list-item> <v-btn text>Start</v-btn> </v-list-item>
-                <v-list-item> <v-btn text>Delete</v-btn> </v-list-item>
-                <v-list-item> <v-btn text>Pause </v-btn> </v-list-item>
+                <v-list-item>
+                  <v-btn text v-on:click="startDownloadItem([item.id])"
+                    >Start</v-btn
+                  >
+                </v-list-item>
+                <v-list-item>
+                  <v-btn text v-on:click="deleteDownloadItem([item.id])"
+                    >Delete</v-btn
+                  >
+                </v-list-item>
+                <v-list-item>
+                  <v-btn text v-on:click="pauseDownloadItem([item.id])"
+                    >Pause
+                  </v-btn>
+                </v-list-item>
               </v-list>
             </v-menu>
           </v-row>
@@ -70,6 +84,7 @@ export default {
   name: "Download",
 
   data: () => ({
+    selected: [],
     items: [],
   }),
 
@@ -90,6 +105,19 @@ export default {
         })
         .catch(console.error);
     },
+
+    startDownloadItem(ids) {
+      console.debug(ids);
+    },
+
+    deleteDownloadItem(ids) {
+      console.debug(ids);
+    },
+
+    pauseDownloadItem(ids) {
+      console.debug(ids);
+    },
+
     resolveState(state) {
       return (
         state.percent +
