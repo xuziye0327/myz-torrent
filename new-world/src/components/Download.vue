@@ -10,7 +10,7 @@
           <v-btn icon v-on:click="deleteDownloadItem([selected])">
             <v-icon>mdi-pause</v-icon>
           </v-btn>
-          <v-btn icon v-on:click="pauseDownloadItem([item.id])">
+          <v-btn icon v-on:click="pauseDownloadItem([selected])">
             <v-icon>mdi-delete</v-icon>
           </v-btn>
         </v-card-text>

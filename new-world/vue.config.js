@@ -3,15 +3,15 @@ module.exports = {
     "vuetify"
   ],
   devServer: {
-    open: process.env.ENABLE_DEV_SERVER,
+    open: true,
     proxy: {
       '/download': {
-        target: process.env.DEV_SERVER,
+        target: process.env.VUE_APP_SERVER,
         secure: false,
         changeOrigin: true,
       },
       '/file': {
-        target: process.env.DEV_SERVER,
+        target: process.env.VUE_APP_SERVER,
         secure: false,
         changeOrigin: true,
       },
