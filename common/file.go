@@ -66,8 +66,8 @@ func (a Files) Swap(i, j int) {
 }
 
 func (a Files) Less(i, j int) bool {
-	if a[i].IsDir == a[j].IsDir {
+	if a[i].Childs == nil && a[j].Childs == nil {
 		return a[i].Name < a[j].Name
 	}
-	return a[i].IsDir
+	return a[i].Childs == nil
 }

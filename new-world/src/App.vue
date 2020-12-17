@@ -20,25 +20,22 @@
           width="100"
         />
       </div>
-
-      <v-spacer></v-spacer>
-      <h4 class="text-left">test</h4>
     </v-app-bar>
 
     <v-main>
-      <HelloWorld />
+      <Main />
     </v-main>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld";
+import Main from "./components/Main.vue";
 
 export default {
   name: "App",
 
   components: {
-    HelloWorld,
+    Main,
   },
 
   data: () => ({

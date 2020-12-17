@@ -1,8 +1,8 @@
 <template>
   <v-dialog v-model="downloadDialog" max-width="600px">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn color="primary" dark v-bind="attrs" v-on="on">
-        Add New Downlad
+      <v-btn fab color="primary" dark v-bind="attrs" v-on="on">
+        <v-icon>mdi-plus</v-icon>
       </v-btn>
     </template>
     <v-card>
